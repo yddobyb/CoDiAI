@@ -1,0 +1,41 @@
+# ===== Python / ML =====
+model/venv/
+model/data/
+model/saved_model/
+model/tflite/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# ===== Flutter =====
+app/.dart_tool/
+app/build/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/.metadata
+app/.idea/
+
+# ===== API keys =====
+app/lib/config/api_keys.dart
+
+# ===== Logs =====
+*.log
+
+# ===== 내부 문서 (과제/발표용, 포폴 불필요) =====
+demo_script.md
+pt_script.md
+plan.md
+fashion_ai_app_idea_detailed_ko.docx
+fashion_integrated_final_idea_detailed_ko.docx
+fashion_launch_shopping_expansion_detailed_ko.docx
+fashion_mvp_codi_4weeks_detailed_ko.docx
+COMP4949_Assignment2_2026.docx
+
+# ===== OS / IDE / Claude =====
+.DS_Store
+*.swp
+.claude/
+CLAUDE.md
+
+# ===== 테스트 스크린샷 =====
+screenshot/

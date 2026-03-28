@@ -1,0 +1,9 @@
+Boots
+Dress
+Hoodie
+Jacket
+Jeans
+Pants
+Shirt
+Sneakers
+T-shirt
