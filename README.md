@@ -2,18 +2,12 @@
 
 A Flutter-based fashion AI app that uses a custom-trained MobileNetV2 model to classify clothing items on-device and recommend outfit combinations with AI-powered style tips.
 
-**COMP4949 Assignment 2** — "Build an app or game with a machine learning model (that you built) embedded in the app or game."
-
 ## How It Works
 
 1. **Upload** a clothing photo (gallery or camera)
 2. **On-device ML** classifies the item (category, color, style) using TFLite
 3. **Recommendation engine** generates 3 outfit combinations using rule-based scoring
 4. **Gemini AI** provides natural language style tips for each recommendation
-
-## Demo
-
-> Video link: [TBD]
 
 ## Key Features
 
@@ -145,4 +139,4 @@ Final score = category(0.4) + color(0.35) + style(0.25)
 
 ## Author
 
-Young Bin Park -- COMP4949, BCIT
+Young Bin Park
