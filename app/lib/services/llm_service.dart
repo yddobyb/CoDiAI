@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import '../config/api_keys.dart' as config;
+import '../core/config/api_keys.dart' as config;
 import '../models/outfit_recommendation.dart';
 
 class LlmService {
@@ -33,11 +33,24 @@ class LlmService {
     );
 
     if (response.statusCode == 200) {
-      final json = jsonDecode(response.body);
-      final text = json['candidates']?[0]?['content']?['parts']?[0]?['text'] as String?;
-      return text?.trim();
+      try {
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        final candidates = json['candidates'] as List?;
+        if (candidates == null || candidates.isEmpty) return null;
+        final content = (candidates[0] as Map?)?['content'] as Map?;
+        final parts = content?['parts'] as List?;
+        if (parts == null || parts.isEmpty) return null;
+        final text = (parts[0] as Map?)?['text'] as String?;
+        return text?.trim();
+      } catch (e) {
+        debugPrint('[LLM] $model JSON parse error: $e');
+        return null;
+      }
     } else {
-      debugPrint('[LLM] $model failed (${response.statusCode}): ${response.body.substring(0, response.body.length > 200 ? 200 : response.body.length)}');
+      final preview = response.body.length > 200
+          ? response.body.substring(0, 200)
+          : response.body;
+      debugPrint('[LLM] $model failed (${response.statusCode}): $preview');
       return null;
     }
   }
@@ -77,8 +90,11 @@ Write a 2-3 sentence styling tip. Include when/where to wear this outfit, one sp
   }
 
   /// Generate descriptions for multiple recommendations in parallel.
-  Future<List<String?>> generateAll(List<OutfitRecommendation> recs) async {
-    if (!isAvailable) return List.filled(recs.length, null);
-    return Future.wait(recs.map((r) => generateDescription(r)));
+  Future<void> generateAll(List<OutfitRecommendation> recs) async {
+    if (!isAvailable) return;
+    final results = await Future.wait(recs.map((r) => generateDescription(r)));
+    for (var i = 0; i < recs.length; i++) {
+      recs[i].llmDescription = results[i];
+    }
   }
 }

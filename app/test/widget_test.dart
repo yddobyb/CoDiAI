@@ -1,9 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fashion_codi/main.dart';
 
 void main() {
   testWidgets('App launches smoke test', (WidgetTester tester) async {
-    await tester.pumpWidget(const FashionCodiApp());
-    expect(find.text('Fashion Codi AI'), findsOneWidget);
+    await tester.pumpWidget(const ProviderScope(child: CoDiApp()));
+    expect(find.text('CoDi'), findsOneWidget);
   });
 }

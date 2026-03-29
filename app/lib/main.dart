@@ -1,31 +1,23 @@
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/theme/app_theme.dart';
+import 'core/router/app_router.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const FashionCodiApp());
+  runApp(const ProviderScope(child: CoDiApp()));
 }
 
-class FashionCodiApp extends StatelessWidget {
-  const FashionCodiApp({super.key});
+class CoDiApp extends StatelessWidget {
+  const CoDiApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Fashion Codi AI',
+    return MaterialApp.router(
+      title: 'CoDi',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6C63FF),
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          elevation: 0,
-        ),
-      ),
-      home: const HomeScreen(),
+      theme: AppTheme.light,
+      routerConfig: appRouter,
     );
   }
 }

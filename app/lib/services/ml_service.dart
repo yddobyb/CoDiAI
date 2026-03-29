@@ -40,6 +40,7 @@ class MlService {
   };
 
   Future<void> loadModel() async {
+    if (_isLoaded) return;
     try {
       _interpreter = await Interpreter.fromAsset(_modelAsset);
       final labelData = await rootBundle.loadString(_labelAsset);

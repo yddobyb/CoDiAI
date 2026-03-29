@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
+import '../core/theme/app_colors.dart';
+import '../core/theme/app_typography.dart';
 
 class ConfidenceBar extends StatelessWidget {
   final double confidence;
-  final double height;
-
-  const ConfidenceBar({
-    super.key,
-    required this.confidence,
-    this.height = 8,
-  });
-
-  Color get _barColor {
-    if (confidence >= 0.8) return const Color(0xFF4CAF50);
-    if (confidence >= 0.6) return const Color(0xFFFFC107);
-    return const Color(0xFFFF5722);
-  }
+  const ConfidenceBar({super.key, required this.confidence});
 
   @override
   Widget build(BuildContext context) {
-    final percent = (confidence * 100).toStringAsFixed(1);
+    final percent = (confidence * 100).round();
+    final color = confidence >= 0.8
+        ? AppColors.success
+        : confidence >= 0.6
+            ? AppColors.warning
+            : AppColors.error;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,28 +21,27 @@ class ConfidenceBar extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Confidence',
-              style: TextStyle(fontSize: 13, color: Colors.grey),
+            Text(
+              'CONFIDENCE',
+              style: AppTypography.labelSmall.copyWith(letterSpacing: 1.2),
             ),
             Text(
               '$percent%',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: _barColor,
+              style: AppTypography.labelMedium.copyWith(
+                color: color,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
             value: confidence,
-            minHeight: height,
-            backgroundColor: Colors.grey.shade200,
-            valueColor: AlwaysStoppedAnimation<Color>(_barColor),
+            minHeight: 6,
+            backgroundColor: AppColors.surfaceVariant,
+            valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
         ),
       ],

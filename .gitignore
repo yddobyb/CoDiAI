@@ -15,8 +15,9 @@ app/.flutter-plugins-dependencies
 app/.metadata
 app/.idea/
 
-# ===== API keys =====
-app/lib/config/api_keys.dart
+# ===== API keys & Config =====
+app/lib/core/config/api_keys.dart
+app/lib/core/config/supabase_config.dart
 
 # ===== Logs =====
 *.log

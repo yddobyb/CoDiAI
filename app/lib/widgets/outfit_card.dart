@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../core/theme/app_colors.dart';
+import '../core/theme/app_typography.dart';
 import '../models/outfit_recommendation.dart';
 import 'color_palette.dart';
 
@@ -16,213 +18,193 @@ class OutfitCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final rec = recommendation;
-
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header row: rank + score
-            Row(
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.borderLight),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // ── Header ──
+          Padding(
+            padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
+            child: Row(
               children: [
-                Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '#$rank',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
-                  ),
+                _RankBadge(rank: rank),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text('Look #$rank', style: AppTypography.headingSmall),
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  'Match Score',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                const Spacer(),
-                _ScoreBadge(score: rec.matchPercent),
+                _ScoreBadge(score: recommendation.matchScore),
               ],
             ),
-            const SizedBox(height: 16),
+          ),
+          const Divider(height: 1),
 
-            // Outfit items
-            ...rec.allItems.map((item) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
+          // ── Items List ──
+          Padding(
+            padding: const EdgeInsets.fromLTRB(18, 14, 18, 0),
+            child: Column(
+              children: recommendation.allItems.map((item) {
+                final isUser = item.imagePath != null;
+                final color = AppColors.clothingColor(item.color);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
                   child: Row(
                     children: [
                       Text(item.icon, style: const TextStyle(fontSize: 20)),
-                      const SizedBox(width: 8),
-                      Text(
-                        item.category,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                        ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(item.category, style: AppTypography.labelLarge),
                       ),
-                      const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: item.colorValue.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: item.colorValue.withValues(alpha: 0.4),
-                          ),
+                          color: color.withAlpha(20),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(
-                          item.color,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade700,
-                          ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              item.color,
+                              style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+                            ),
+                          ],
                         ),
                       ),
-                      if (item.imagePath != null) ...[
-                        const SizedBox(width: 4),
-                        Icon(Icons.star, size: 14, color: theme.colorScheme.primary),
-                        Text(
-                          ' Your item',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: theme.colorScheme.primary,
+                      if (isUser) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: AppColors.accent.withAlpha(25),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            'yours',
+                            style: AppTypography.labelSmall.copyWith(color: AppColors.accentDark),
                           ),
                         ),
                       ],
                     ],
                   ),
-                )),
+                );
+              }).toList(),
+            ),
+          ),
 
-            const Divider(height: 24),
+          // ── Color Palette ──
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            child: ColorPalette(items: recommendation.allItems),
+          ),
+          const SizedBox(height: 14),
 
-            // Color palette
-            Row(
+          // ── Harmony & Style ──
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            child: Row(
               children: [
-                Icon(Icons.palette_outlined,
-                    size: 16, color: Colors.grey.shade500),
-                const SizedBox(width: 6),
-                ColorPalette(items: rec.allItems),
+                Expanded(child: _InfoChip(label: recommendation.colorHarmony)),
+                const SizedBox(width: 8),
+                Expanded(child: _InfoChip(label: recommendation.styleConsistency)),
               ],
             ),
-            const SizedBox(height: 8),
+          ),
+          const SizedBox(height: 12),
 
-            // Harmony + consistency descriptions
-            Text(
-              rec.colorHarmony,
-              style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+          // ── Match Reason ──
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            child: Text(
+              recommendation.matchReason,
+              style: AppTypography.accent.copyWith(fontSize: 14),
             ),
-            const SizedBox(height: 4),
-            Text(
-              rec.styleConsistency,
-              style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
-            ),
-            const SizedBox(height: 8),
+          ),
 
-            // Reason
+          // ── AI Style Tip ──
+          if (recommendation.llmDescription != null) ...[
+            const SizedBox(height: 14),
             Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.symmetric(horizontal: 18),
+              padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(10),
+                color: AppColors.surfaceVariant,
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Text(
-                rec.matchReason,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontStyle: FontStyle.italic,
-                  color: Colors.grey.shade700,
-                ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.auto_awesome, size: 16, color: AppColors.accent),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      recommendation.llmDescription!,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-
-            // AI Style Tip
-            if (rec.llmDescription != null) ...[
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.amber.shade50,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.amber.shade200),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.auto_awesome,
-                            size: 14, color: Colors.amber.shade700),
-                        const SizedBox(width: 4),
-                        Text(
-                          'AI Style Tip',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.amber.shade800,
-                          ),
-                        ),
-                      ],
+          ] else if (llmLoading) ...[
+            const SizedBox(height: 14),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: Row(
+                children: [
+                  const SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 1.5,
+                      color: AppColors.textTertiary,
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      rec.llmDescription!,
-                      style: const TextStyle(fontSize: 13, height: 1.4),
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text('Generating style tip...', style: AppTypography.bodySmall),
+                ],
               ),
-            ] else if (llmLoading) ...[
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.amber.shade50,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.amber.shade100),
-                ),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 14,
-                      height: 14,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.amber.shade600,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Generating AI style tip...',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.amber.shade700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ],
+
+          const SizedBox(height: 18),
+        ],
+      ),
+    );
+  }
+}
+
+class _RankBadge extends StatelessWidget {
+  final int rank;
+  const _RankBadge({required this.rank});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 28,
+      height: 28,
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        '$rank',
+        style: AppTypography.labelMedium.copyWith(
+          color: AppColors.textInverse,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
@@ -230,31 +212,49 @@ class OutfitCard extends StatelessWidget {
 }
 
 class _ScoreBadge extends StatelessWidget {
-  final int score;
+  final double score;
   const _ScoreBadge({required this.score});
 
-  Color get _color {
-    if (score >= 80) return const Color(0xFF4CAF50);
-    if (score >= 60) return const Color(0xFFFFC107);
-    return const Color(0xFFFF5722);
+  @override
+  Widget build(BuildContext context) {
+    final percent = (score * 100).round();
+    final color = percent >= 80
+        ? AppColors.success
+        : percent >= 60
+            ? AppColors.warning
+            : AppColors.error;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withAlpha(20),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        '$percent%',
+        style: AppTypography.labelMedium.copyWith(color: color, fontWeight: FontWeight.w700),
+      ),
+    );
   }
+}
+
+class _InfoChip extends StatelessWidget {
+  final String label;
+  const _InfoChip({required this.label});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: _color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _color.withValues(alpha: 0.5)),
+        color: AppColors.surfaceMuted,
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        '$score%',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: _color,
-        ),
+        label,
+        style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
       ),
     );
   }
