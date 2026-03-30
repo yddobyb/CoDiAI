@@ -4,7 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../models/clothing_item.dart';
+import '../../providers/service_providers.dart';
 import '../../widgets/confidence_bar.dart';
+import '../closet/closet_provider.dart';
 import 'analysis_provider.dart';
 
 class UploadScreen extends ConsumerStatefulWidget {
@@ -116,6 +119,40 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
     );
   }
 
+  bool _saved = false;
+
+  Widget _buildSaveButton(ClothingItem item) {
+    final auth = ref.watch(authStateProvider);
+    final isLoggedIn = auth.value?.session != null;
+
+    if (_saved) {
+      return OutlinedButton.icon(
+        onPressed: null,
+        icon: const Icon(Icons.check, size: 18, color: AppColors.success),
+        label: Text('Saved to Closet', style: TextStyle(color: AppColors.success)),
+      );
+    }
+
+    return OutlinedButton.icon(
+      onPressed: () async {
+        if (!isLoggedIn) {
+          context.push('/auth');
+          return;
+        }
+        await ref.read(closetProvider.notifier).addItem(
+          imagePath: widget.imagePath,
+          category: item.category,
+          color: item.color,
+          style: item.style,
+          confidence: item.confidence,
+        );
+        if (mounted) setState(() => _saved = true);
+      },
+      icon: const Icon(Icons.checkroom, size: 18),
+      label: const Text('Save to Closet'),
+    );
+  }
+
   Widget _buildResult(AnalysisState state) {
     final item = state.result;
     if (item == null) return _buildError('No result available');
@@ -224,6 +261,10 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
           onPressed: () => context.pushNamed('result', extra: item),
           child: const Text('Get Outfit Ideas'),
         ),
+        const SizedBox(height: 12),
+
+        // ── Save to Closet ──
+        _buildSaveButton(item),
       ],
     );
   }

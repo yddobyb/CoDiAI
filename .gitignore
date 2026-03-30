@@ -22,7 +22,7 @@ app/lib/core/config/supabase_config.dart
 # ===== Logs =====
 *.log
 
-# ===== 내부 문서 (과제/발표용, 포폴 불필요) =====
+# ===== 내부 문서 =====
 demo_script.md
 pt_script.md
 plan.md
@@ -40,3 +40,6 @@ CLAUDE.md
 
 # ===== 테스트 스크린샷 =====
 screenshot/
+
+# ===== 기타 =====
+supabase/
