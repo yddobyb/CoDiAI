@@ -40,28 +40,58 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
           onPressed: () => context.pop(),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // ── Image Preview ──
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: AspectRatio(
-                aspectRatio: 3 / 4,
-                child: Image.file(
-                  File(widget.imagePath),
-                  fit: BoxFit.cover,
-                ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // ── Image Preview ──
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.35,
+                      ),
+                      child: Image.file(
+                        File(widget.imagePath),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // ── Status / Result (info only) ──
+                  _buildContent(state),
+                ],
               ),
             ),
-            const SizedBox(height: 24),
-
-            // ── Status / Result ──
-            _buildContent(state),
-          ],
-        ),
+          ),
+          // ── Fixed bottom buttons ──
+          if (state.status == AnalysisStatus.done && state.result != null)
+            Container(
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+              decoration: BoxDecoration(
+                color: AppColors.background,
+                border: Border(top: BorderSide(color: AppColors.borderLight)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => context.pushNamed('result', extra: state.result!),
+                    child: const Text('Get Outfit Ideas'),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildSaveButton(state.result!),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -254,17 +284,6 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 24),
-
-        // ── CTA ──
-        ElevatedButton(
-          onPressed: () => context.pushNamed('result', extra: item),
-          child: const Text('Get Outfit Ideas'),
-        ),
-        const SizedBox(height: 12),
-
-        // ── Save to Closet ──
-        _buildSaveButton(item),
       ],
     );
   }

@@ -15,6 +15,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   bool _isLogin = true;
   bool _isLoading = false;
   String? _error;
+  String? _success;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -28,7 +29,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() { _isLoading = true; _error = null; });
+    setState(() { _isLoading = true; _error = null; _success = null; });
 
     try {
       final auth = ref.read(authServiceProvider);
@@ -37,16 +38,31 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
+        if (mounted) Navigator.of(context).pop();
       } else {
-        await auth.signUp(
+        final needsConfirmation = await auth.signUp(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
+        if (!mounted) return;
+        if (needsConfirmation) {
+          setState(() {
+            _success = 'Account created! Please check your email to verify, then sign in.';
+            _isLogin = true;
+          });
+        } else {
+          // Auto-confirmed → already logged in
+          Navigator.of(context).pop();
+        }
       }
-      if (mounted) Navigator.of(context).pop();
     } catch (e) {
+      final msg = e.toString().replaceFirst('Exception: ', '');
       setState(() {
-        _error = e.toString().replaceFirst('Exception: ', '');
+        if (msg.contains('over_email_send_rate_limit') || msg.contains('429')) {
+          _error = 'Too many attempts. Please wait a moment and try again.';
+        } else {
+          _error = msg;
+        }
       });
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -107,6 +123,30 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 },
               ),
               const SizedBox(height: 24),
+
+              // Success
+              if (_success != null) ...[
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.accent.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.check_circle_outline, color: AppColors.accent, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _success!,
+                          style: AppTypography.bodySmall.copyWith(color: AppColors.accent),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
 
               // Error
               if (_error != null) ...[

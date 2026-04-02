@@ -9,10 +9,20 @@ class AuthService {
 
   Stream<AuthState> get authStateChanges => _client.auth.onAuthStateChange;
 
-  Future<void> signUp({required String email, required String password}) async {
+  /// Returns true if email confirmation is needed, false if auto-logged in.
+  Future<bool> signUp({required String email, required String password}) async {
     final res = await _client.auth.signUp(email: email, password: password);
     if (res.user == null) throw Exception('Sign up failed');
-    debugPrint('[Auth] Sign up success: ${res.user!.email}');
+
+    // If session exists, user is auto-confirmed and logged in
+    if (res.session != null) {
+      debugPrint('[Auth] Sign up + auto login: ${res.user!.email}');
+      return false;
+    }
+
+    // No session = email confirmation required
+    debugPrint('[Auth] Sign up success, email confirmation needed: ${res.user!.email}');
+    return true;
   }
 
   Future<void> signIn({required String email, required String password}) async {
