@@ -20,10 +20,10 @@ class _ClosetScreenState extends ConsumerState<ClosetScreen> {
   static const _filters = ['All', 'Tops', 'Bottoms', 'Outer', 'Shoes'];
   static const _filterCategories = {
     'All': null,
-    'Tops': ['T-shirt', 'Shirt', 'Hoodie'],
-    'Bottoms': ['Pants', 'Jeans', 'Dress'],
-    'Outer': ['Jacket'],
-    'Shoes': ['Sneakers', 'Boots'],
+    'Tops': ['T-shirt', 'Shirt', 'Hoodie', 'Sweater'],
+    'Bottoms': ['Pants', 'Jeans', 'Shorts', 'Skirt', 'Dress'],
+    'Outer': ['Jacket', 'Coat'],
+    'Shoes': ['Sneakers', 'Boots', 'Flats', 'Heels'],
   };
 
   @override

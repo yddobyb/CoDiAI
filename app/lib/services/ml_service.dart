@@ -20,12 +20,18 @@ class MlService {
     'T-shirt': 'casual',
     'Shirt': 'formal',
     'Hoodie': 'casual',
+    'Sweater': 'casual',
     'Jacket': 'formal',
+    'Coat': 'formal',
     'Pants': 'formal',
     'Jeans': 'casual',
+    'Shorts': 'casual',
+    'Skirt': 'formal',
     'Dress': 'formal',
     'Sneakers': 'sporty',
     'Boots': 'formal',
+    'Flats': 'casual',
+    'Heels': 'formal',
   };
 
   // Multiple reference points per color for better matching

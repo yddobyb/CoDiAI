@@ -20,12 +20,18 @@ class ClothingItem {
       'T-shirt': 'top',
       'Shirt': 'top',
       'Hoodie': 'top',
+      'Sweater': 'top',
       'Jacket': 'outer',
+      'Coat': 'outer',
       'Pants': 'bottom',
       'Jeans': 'bottom',
+      'Shorts': 'bottom',
+      'Skirt': 'bottom',
       'Dress': 'bottom',
       'Sneakers': 'shoes',
       'Boots': 'shoes',
+      'Flats': 'shoes',
+      'Heels': 'shoes',
     };
     return slotMap[category] ?? 'top';
   }
@@ -37,12 +43,18 @@ class ClothingItem {
       'T-shirt': '👕',
       'Shirt': '👔',
       'Hoodie': '🧥',
+      'Sweater': '🧶',
       'Jacket': '🧥',
+      'Coat': '🧥',
       'Pants': '👖',
       'Jeans': '👖',
+      'Shorts': '🩳',
+      'Skirt': '👗',
       'Dress': '👗',
       'Sneakers': '👟',
       'Boots': '🥾',
+      'Flats': '👞',
+      'Heels': '👠',
     };
     return iconMap[category] ?? '👕';
   }
@@ -61,16 +73,17 @@ class ClothingItem {
   }
 
   static const List<String> allCategories = [
-    'Boots', 'Dress', 'Hoodie', 'Jacket', 'Jeans',
-    'Pants', 'Shirt', 'Sneakers', 'T-shirt',
+    'Boots', 'Coat', 'Dress', 'Flats', 'Heels', 'Hoodie',
+    'Jacket', 'Jeans', 'Pants', 'Shirt', 'Shorts', 'Skirt',
+    'Sneakers', 'Sweater', 'T-shirt',
   ];
 
   static const List<String> allColors = [
     'black', 'white', 'gray', 'blue', 'red', 'beige', 'green',
   ];
 
-  static const List<String> topCategories = ['T-shirt', 'Shirt', 'Hoodie'];
-  static const List<String> outerCategories = ['Jacket'];
-  static const List<String> bottomCategories = ['Pants', 'Jeans', 'Dress'];
-  static const List<String> shoesCategories = ['Sneakers', 'Boots'];
+  static const List<String> topCategories = ['T-shirt', 'Shirt', 'Hoodie', 'Sweater'];
+  static const List<String> outerCategories = ['Jacket', 'Coat'];
+  static const List<String> bottomCategories = ['Pants', 'Jeans', 'Shorts', 'Skirt', 'Dress'];
+  static const List<String> shoesCategories = ['Sneakers', 'Boots', 'Flats', 'Heels'];
 }

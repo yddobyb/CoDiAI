@@ -81,8 +81,8 @@ void main() {
     });
 
     group('static lists', () {
-      test('allCategories contains 9 items', () {
-        expect(ClothingItem.allCategories.length, 9);
+      test('allCategories contains 15 items', () {
+        expect(ClothingItem.allCategories.length, 15);
       });
 
       test('allColors contains 7 colors', () {

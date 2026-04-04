@@ -1,9 +1,15 @@
 Boots
+Coat
 Dress
+Flats
+Heels
 Hoodie
 Jacket
 Jeans
 Pants
 Shirt
+Shorts
+Skirt
 Sneakers
+Sweater
 T-shirt

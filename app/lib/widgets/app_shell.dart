@@ -34,6 +34,11 @@ class AppShell extends StatelessWidget {
               label: 'Closet',
             ),
             NavigationDestination(
+              icon: Icon(Icons.history_outlined),
+              selectedIcon: Icon(Icons.history, color: AppColors.accent),
+              label: 'History',
+            ),
+            NavigationDestination(
               icon: Icon(Icons.person_outline),
               selectedIcon: Icon(Icons.person, color: AppColors.accent),
               label: 'Profile',

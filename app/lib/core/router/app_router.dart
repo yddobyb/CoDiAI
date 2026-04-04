@@ -5,6 +5,7 @@ import '../../features/home/home_screen.dart';
 import '../../features/analysis/upload_screen.dart';
 import '../../features/recommendation/result_screen.dart';
 import '../../features/closet/closet_screen.dart';
+import '../../features/history/history_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/auth/auth_screen.dart';
 import '../../widgets/app_shell.dart';
@@ -49,7 +50,21 @@ final appRouter = GoRouter(
           ),
         ]),
 
-        // Tab 2: Profile
+        // Tab 2: History
+        StatefulShellBranch(routes: [
+          GoRoute(
+            path: '/history',
+            name: 'history',
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const HistoryScreen(),
+              transitionsBuilder: (_, animation, secondaryAnimation, child) =>
+                  FadeTransition(opacity: animation, child: child),
+            ),
+          ),
+        ]),
+
+        // Tab 3: Profile
         StatefulShellBranch(routes: [
           GoRoute(
             path: '/profile',

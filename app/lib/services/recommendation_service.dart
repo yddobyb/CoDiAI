@@ -5,23 +5,29 @@ class RecommendationService {
   // ── Category compatibility (pairwise, 0.0–1.0) ──
 
   static const Map<String, Map<String, double>> _topBottomCompat = {
-    'T-shirt': {'Pants': 0.70, 'Jeans': 0.95, 'Dress': 0.0},
-    'Shirt': {'Pants': 0.95, 'Jeans': 0.85, 'Dress': 0.0},
-    'Hoodie': {'Pants': 0.70, 'Jeans': 0.95, 'Dress': 0.0},
-    'Jacket': {'Pants': 0.85, 'Jeans': 0.90, 'Dress': 0.90},
+    'T-shirt': {'Pants': 0.70, 'Jeans': 0.95, 'Shorts': 0.90, 'Skirt': 0.75, 'Dress': 0.0},
+    'Shirt':   {'Pants': 0.95, 'Jeans': 0.85, 'Shorts': 0.65, 'Skirt': 0.90, 'Dress': 0.0},
+    'Hoodie':  {'Pants': 0.70, 'Jeans': 0.95, 'Shorts': 0.80, 'Skirt': 0.55, 'Dress': 0.0},
+    'Sweater': {'Pants': 0.90, 'Jeans': 0.90, 'Shorts': 0.45, 'Skirt': 0.85, 'Dress': 0.0},
+    'Jacket':  {'Pants': 0.85, 'Jeans': 0.90, 'Shorts': 0.60, 'Skirt': 0.80, 'Dress': 0.90},
+    'Coat':    {'Pants': 0.90, 'Jeans': 0.85, 'Shorts': 0.35, 'Skirt': 0.85, 'Dress': 0.95},
   };
 
   static const Map<String, Map<String, double>> _bottomShoesCompat = {
-    'Pants': {'Sneakers': 0.80, 'Boots': 0.85},
-    'Jeans': {'Sneakers': 0.95, 'Boots': 0.80},
-    'Dress': {'Sneakers': 0.60, 'Boots': 0.95},
+    'Pants':  {'Sneakers': 0.80, 'Boots': 0.85, 'Flats': 0.80, 'Heels': 0.85},
+    'Jeans':  {'Sneakers': 0.95, 'Boots': 0.80, 'Flats': 0.75, 'Heels': 0.65},
+    'Shorts': {'Sneakers': 0.95, 'Boots': 0.40, 'Flats': 0.85, 'Heels': 0.55},
+    'Skirt':  {'Sneakers': 0.70, 'Boots': 0.85, 'Flats': 0.90, 'Heels': 0.95},
+    'Dress':  {'Sneakers': 0.60, 'Boots': 0.85, 'Flats': 0.85, 'Heels': 0.95},
   };
 
   static const Map<String, Map<String, double>> _topShoesCompat = {
-    'T-shirt': {'Sneakers': 0.95, 'Boots': 0.50},
-    'Shirt': {'Sneakers': 0.70, 'Boots': 0.85},
-    'Hoodie': {'Sneakers': 0.95, 'Boots': 0.60},
-    'Jacket': {'Sneakers': 0.80, 'Boots': 0.90},
+    'T-shirt': {'Sneakers': 0.95, 'Boots': 0.50, 'Flats': 0.75, 'Heels': 0.40},
+    'Shirt':   {'Sneakers': 0.70, 'Boots': 0.85, 'Flats': 0.90, 'Heels': 0.90},
+    'Hoodie':  {'Sneakers': 0.95, 'Boots': 0.60, 'Flats': 0.65, 'Heels': 0.30},
+    'Sweater': {'Sneakers': 0.80, 'Boots': 0.90, 'Flats': 0.85, 'Heels': 0.75},
+    'Jacket':  {'Sneakers': 0.80, 'Boots': 0.90, 'Flats': 0.80, 'Heels': 0.85},
+    'Coat':    {'Sneakers': 0.65, 'Boots': 0.95, 'Flats': 0.75, 'Heels': 0.90},
   };
 
   static const _neutralColors = {'black', 'white', 'gray'};
@@ -34,8 +40,9 @@ class RecommendationService {
   };
 
   /// Generate top 3 outfit recommendations for a given user item.
+  /// [preferredStyle] adds a bonus when recommended items match the user's preference.
   List<OutfitRecommendation> recommend(ClothingItem userItem,
-      {int maxResults = 3}) {
+      {int maxResults = 3, String? preferredStyle}) {
     final slot = userItem.slot;
     List<_Candidate> candidates = [];
 
@@ -57,7 +64,7 @@ class RecommendationService {
                 color: sColor,
                 style: _styleFor(shoes),
               );
-              final score = _scoreOutfit(userItem, [bottomItem, shoesItem]);
+              final score = _scoreOutfit(userItem, [bottomItem, shoesItem], preferredStyle: preferredStyle);
               candidates.add(_Candidate([bottomItem, shoesItem], score));
             }
           }
@@ -73,26 +80,28 @@ class RecommendationService {
               color: sColor,
               style: _styleFor(shoes),
             );
-            final score = _scoreOutfit(userItem, [shoesItem]);
+            final score = _scoreOutfit(userItem, [shoesItem], preferredStyle: preferredStyle);
             candidates.add(_Candidate([shoesItem], score));
           }
         }
-        // Also try Jacket + any shoes
-        for (final shoes in ClothingItem.shoesCategories) {
-          for (final sColor in ClothingItem.allColors) {
-            for (final jColor in ClothingItem.allColors) {
-              final jacket = ClothingItem(
-                category: 'Jacket',
-                color: jColor,
-                style: 'formal',
-              );
-              final shoesItem = ClothingItem(
-                category: shoes,
-                color: sColor,
-                style: _styleFor(shoes),
-              );
-              final score = _scoreOutfit(userItem, [jacket, shoesItem]);
-              candidates.add(_Candidate([jacket, shoesItem], score));
+        // Also try outer + any shoes
+        for (final outer in ClothingItem.outerCategories) {
+          for (final shoes in ClothingItem.shoesCategories) {
+            for (final sColor in ClothingItem.allColors) {
+              for (final oColor in ClothingItem.allColors) {
+                final outerItem = ClothingItem(
+                  category: outer,
+                  color: oColor,
+                  style: _styleFor(outer),
+                );
+                final shoesItem = ClothingItem(
+                  category: shoes,
+                  color: sColor,
+                  style: _styleFor(shoes),
+                );
+                final score = _scoreOutfit(userItem, [outerItem, shoesItem], preferredStyle: preferredStyle);
+                candidates.add(_Candidate([outerItem, shoesItem], score));
+              }
             }
           }
         }
@@ -112,7 +121,7 @@ class RecommendationService {
                   color: sColor,
                   style: _styleFor(shoes),
                 );
-                final score = _scoreOutfit(userItem, [topItem, shoesItem]);
+                final score = _scoreOutfit(userItem, [topItem, shoesItem], preferredStyle: preferredStyle);
                 candidates.add(_Candidate([topItem, shoesItem], score));
               }
             }
@@ -136,7 +145,7 @@ class RecommendationService {
                 color: bColor,
                 style: _styleFor(bottom),
               );
-              final score = _scoreOutfit(userItem, [topItem, bottomItem]);
+              final score = _scoreOutfit(userItem, [topItem, bottomItem], preferredStyle: preferredStyle);
               candidates.add(_Candidate([topItem, bottomItem], score));
             }
           }
@@ -253,13 +262,22 @@ class RecommendationService {
 
   // ── Scoring ──
 
-  _Scores _scoreOutfit(ClothingItem user, List<ClothingItem> items) {
+  _Scores _scoreOutfit(ClothingItem user, List<ClothingItem> items, {String? preferredStyle}) {
     final all = [user, ...items];
     final catScore = _categoryCompatibility(all);
     final colScore = _colorHarmony(all);
     final styScore = _styleConsistency(all.map((i) => i.style).toList());
-    final total = catScore * 0.4 + colScore * 0.35 + styScore * 0.25;
-    return _Scores(catScore, colScore, styScore, total);
+    var total = catScore * 0.4 + colScore * 0.35 + styScore * 0.25;
+
+    // Style preference bonus: +5% if recommended items align with user's preferred style
+    if (preferredStyle != null) {
+      final matchCount = items.where((i) => i.style == preferredStyle).length;
+      if (matchCount > 0) {
+        total += 0.05 * (matchCount / items.length);
+      }
+    }
+
+    return _Scores(catScore, colScore, styScore, total.clamp(0.0, 1.0));
   }
 
   double _categoryCompatibility(List<ClothingItem> items) {
@@ -417,12 +435,18 @@ class RecommendationService {
       'T-shirt': 'casual',
       'Shirt': 'formal',
       'Hoodie': 'casual',
+      'Sweater': 'casual',
       'Jacket': 'formal',
+      'Coat': 'formal',
       'Pants': 'formal',
       'Jeans': 'casual',
+      'Shorts': 'casual',
+      'Skirt': 'formal',
       'Dress': 'formal',
       'Sneakers': 'sporty',
       'Boots': 'formal',
+      'Flats': 'casual',
+      'Heels': 'formal',
     };
     return map[category] ?? 'casual';
   }
