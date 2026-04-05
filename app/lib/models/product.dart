@@ -1,5 +1,3 @@
-import 'package:intl/intl.dart';
-
 class Product {
   final String id;
   final String name;
@@ -40,9 +38,7 @@ class Product {
     );
   }
 
-  static final _priceFormat = NumberFormat('#,###');
-
-  String get formattedPrice => '₩${_priceFormat.format(price)}';
+  String get formattedPrice => '\$$price';
 
   String get slot {
     const slotMap = {

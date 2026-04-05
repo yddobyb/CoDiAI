@@ -5,12 +5,12 @@ void main() {
   group('Product', () {
     final sampleMap = {
       'id': 'abc-123',
-      'name': '에센셜 크루넥 티',
-      'brand': 'MUSINSA STANDARD',
+      'name': 'Essential Crewneck Tee',
+      'brand': 'KOTN',
       'category': 'T-shirt',
       'color': 'white',
       'style': 'casual',
-      'price': 19900,
+      'price': 45,
       'image_url': 'https://example.com/img.jpg',
       'affiliate_url': 'https://example.com/buy',
       'created_at': '2026-04-04T12:00:00Z',
@@ -19,12 +19,12 @@ void main() {
     test('fromMap parses all fields correctly', () {
       final product = Product.fromMap(sampleMap);
       expect(product.id, 'abc-123');
-      expect(product.name, '에센셜 크루넥 티');
-      expect(product.brand, 'MUSINSA STANDARD');
+      expect(product.name, 'Essential Crewneck Tee');
+      expect(product.brand, 'KOTN');
       expect(product.category, 'T-shirt');
       expect(product.color, 'white');
       expect(product.style, 'casual');
-      expect(product.price, 19900);
+      expect(product.price, 45);
       expect(product.imageUrl, 'https://example.com/img.jpg');
       expect(product.affiliateUrl, 'https://example.com/buy');
     });
@@ -35,14 +35,14 @@ void main() {
       expect(product.affiliateUrl, isNull);
     });
 
-    test('formattedPrice formats KRW correctly', () {
+    test('formattedPrice formats CAD correctly', () {
       final product = Product.fromMap(sampleMap);
-      expect(product.formattedPrice, '₩19,900');
+      expect(product.formattedPrice, '\$45');
 
       final expensive = Product.fromMap(
-        Map<String, dynamic>.from(sampleMap)..['price'] = 199000,
+        Map<String, dynamic>.from(sampleMap)..['price'] = 298,
       );
-      expect(expensive.formattedPrice, '₩199,000');
+      expect(expensive.formattedPrice, '\$298');
     });
 
     test('slot maps categories correctly', () {

@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../models/clothing_item.dart';
 import '../../widgets/outfit_card.dart';
+import '../../widgets/product_suggestion_row.dart';
 import 'recommendation_provider.dart';
 
 class ResultScreen extends ConsumerStatefulWidget {
@@ -74,15 +75,24 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // ── Outfit Cards ──
+                // ── Outfit Cards + Product Suggestions ──
                 ...List.generate(state.recommendations.length, (i) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: OutfitCard(
-                      recommendation: state.recommendations[i],
-                      rank: i + 1,
-                      llmLoading: state.llmLoading,
-                    ),
+                  final rec = state.recommendations[i];
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      OutfitCard(
+                        recommendation: rec,
+                        rank: i + 1,
+                        llmLoading: state.llmLoading,
+                      ),
+                      // Product suggestions for each recommended (non-user) item
+                      ...rec.recommendedItems.map((item) => Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: ProductSuggestionRow(item: item),
+                      )),
+                      const SizedBox(height: 16),
+                    ],
                   );
                 }),
 
