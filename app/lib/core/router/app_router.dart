@@ -8,6 +8,9 @@ import '../../features/closet/closet_screen.dart';
 import '../../features/history/history_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/auth/auth_screen.dart';
+import '../../features/shop/shop_screen.dart';
+import '../../features/shop/product_detail_screen.dart';
+import '../../models/product.dart';
 import '../../widgets/app_shell.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -36,7 +39,21 @@ final appRouter = GoRouter(
           ),
         ]),
 
-        // Tab 1: Closet
+        // Tab 1: Shop
+        StatefulShellBranch(routes: [
+          GoRoute(
+            path: '/shop',
+            name: 'shop',
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const ShopScreen(),
+              transitionsBuilder: (_, animation, secondaryAnimation, child) =>
+                  FadeTransition(opacity: animation, child: child),
+            ),
+          ),
+        ]),
+
+        // Tab 2: Closet
         StatefulShellBranch(routes: [
           GoRoute(
             path: '/closet',
@@ -111,6 +128,32 @@ final appRouter = GoRouter(
         return CustomTransitionPage(
           key: state.pageKey,
           child: ResultScreen(clothingItem: item),
+          transitionsBuilder: (_, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: CurveTween(curve: Curves.easeIn).animate(animation),
+              child: SlideTransition(
+                position: Tween(begin: const Offset(0, 0.05), end: Offset.zero)
+                    .animate(CurveTween(curve: Curves.easeOutCubic).animate(animation)),
+                child: child,
+              ),
+            );
+          },
+        );
+      },
+    ),
+    GoRoute(
+      path: '/product',
+      name: 'product',
+      parentNavigatorKey: _rootNavigatorKey,
+      redirect: (context, state) {
+        if (state.extra is! Product) return '/shop';
+        return null;
+      },
+      pageBuilder: (context, state) {
+        final product = state.extra! as Product;
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: ProductDetailScreen(product: product),
           transitionsBuilder: (_, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity: CurveTween(curve: Curves.easeIn).animate(animation),

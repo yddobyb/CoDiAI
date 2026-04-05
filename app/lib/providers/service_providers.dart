@@ -8,6 +8,7 @@ import '../services/closet_service.dart';
 import '../services/profile_service.dart';
 import '../services/history_service.dart';
 import '../services/personalization_service.dart';
+import '../services/product_service.dart';
 
 final mlServiceProvider = Provider<MlService>((ref) => MlService());
 final recommendationServiceProvider = Provider<RecommendationService>((ref) => RecommendationService());
@@ -17,6 +18,7 @@ final closetServiceProvider = Provider<ClosetService>((ref) => ClosetService());
 final profileServiceProvider = Provider<ProfileService>((ref) => ProfileService());
 final historyServiceProvider = Provider<HistoryService>((ref) => HistoryService());
 final personalizationServiceProvider = Provider<PersonalizationService>((ref) => PersonalizationService());
+final productServiceProvider = Provider<ProductService>((ref) => ProductService());
 
 final authStateProvider = StreamProvider<AuthState>((ref) {
   return Supabase.instance.client.auth.onAuthStateChange;

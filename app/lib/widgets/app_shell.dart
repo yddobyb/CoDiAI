@@ -29,6 +29,11 @@ class AppShell extends StatelessWidget {
               label: 'Home',
             ),
             NavigationDestination(
+              icon: Icon(Icons.shopping_bag_outlined),
+              selectedIcon: Icon(Icons.shopping_bag, color: AppColors.accent),
+              label: 'Shop',
+            ),
+            NavigationDestination(
               icon: Icon(Icons.checkroom_outlined),
               selectedIcon: Icon(Icons.checkroom, color: AppColors.accent),
               label: 'Closet',
