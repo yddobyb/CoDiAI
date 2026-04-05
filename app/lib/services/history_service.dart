@@ -33,6 +33,7 @@ class HistoryService {
         'color': userItem.color,
         'style': userItem.style,
         'confidence': userItem.confidence,
+        if (userItem.season != null) 'season': userItem.season,
       },
       'recommendations': recsJson,
     };
@@ -80,6 +81,7 @@ class HistoryService {
       category: userItemData['category'] as String,
       color: userItemData['color'] as String,
       style: userItemData['style'] as String,
+      season: userItemData['season'] as String?,
       confidence: (userItemData['confidence'] as num?)?.toDouble() ?? 0.0,
     );
 

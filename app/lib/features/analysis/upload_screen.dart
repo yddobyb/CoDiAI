@@ -256,6 +256,28 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
               ),
               const SizedBox(height: 20),
 
+              // Season chip (if available)
+              if (item.season != null) ...[
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: AppColors.borderLight),
+                      ),
+                      child: Text(
+                        '${item.seasonIcon} ${item.seasonLabel}',
+                        style: AppTypography.labelLarge.copyWith(color: AppColors.textSecondary),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 20),
+
               // Confidence
               ConfidenceBar(confidence: item.confidence),
 

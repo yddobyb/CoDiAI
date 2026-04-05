@@ -74,7 +74,7 @@ void main() {
       });
 
       test('unknown color defaults to gray', () {
-        final item = ClothingItem(category: 'T-shirt', color: 'purple', style: 'casual');
+        final item = ClothingItem(category: 'T-shirt', color: 'magenta', style: 'casual');
         // Gray = Color(0xFF808080)
         expect(item.colorValue, const Color(0xFF808080));
       });
@@ -85,8 +85,8 @@ void main() {
         expect(ClothingItem.allCategories.length, 15);
       });
 
-      test('allColors contains 7 colors', () {
-        expect(ClothingItem.allColors.length, 7);
+      test('allColors contains 12 colors', () {
+        expect(ClothingItem.allColors.length, 12);
       });
 
       test('category lists cover all categories', () {

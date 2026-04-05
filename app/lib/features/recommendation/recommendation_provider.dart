@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/clothing_item.dart';
 import '../../models/outfit_recommendation.dart';
+import '../../models/user_preferences.dart';
 import '../../providers/service_providers.dart';
 
 class RecommendationState {
@@ -41,22 +42,39 @@ class RecommendationNotifier extends Notifier<RecommendationState> {
     state = const RecommendationState(isLoading: true);
 
     try {
-      // Get user's style preference if logged in
-      String? preferredStyle;
+      // Build personalized preferences if logged in
+      var preferences = const UserPreferences();
       try {
         final user = Supabase.instance.client.auth.currentUser;
         if (user != null) {
-          final profile = await Supabase.instance.client
+          // Fetch profile, closet, and history in parallel
+          final profileFuture = Supabase.instance.client
               .from('profiles')
               .select('style_preference')
               .eq('id', user.id)
               .single();
-          preferredStyle = profile['style_preference'] as String?;
+          final closetFuture = ref.read(closetServiceProvider).fetchItems();
+          final historyFuture = ref.read(historyServiceProvider).fetchHistory();
+
+          final results = await Future.wait<Object>(
+              [profileFuture, closetFuture, historyFuture]);
+
+          final profile = results[0] as Map<String, dynamic>;
+          final closetItems = results[1] as List<Map<String, dynamic>>;
+          final historyRows = results[2] as List<Map<String, dynamic>>;
+
+          preferences = ref.read(personalizationServiceProvider).buildPreferences(
+            closetItems: closetItems,
+            historyRows: historyRows,
+            profileStyle: profile['style_preference'] as String?,
+          );
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[Recommendation] Personalization fetch failed: $e');
+      }
 
       final recService = ref.read(recommendationServiceProvider);
-      final results = recService.recommend(item, preferredStyle: preferredStyle);
+      final results = recService.recommend(item, preferences: preferences);
       state = RecommendationState(
         recommendations: results,
         isLoading: false,

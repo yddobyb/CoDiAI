@@ -1,5 +1,6 @@
 import '../models/clothing_item.dart';
 import '../models/outfit_recommendation.dart';
+import '../models/user_preferences.dart';
 
 class RecommendationService {
   // ── Category compatibility (pairwise, 0.0–1.0) ──
@@ -31,18 +32,27 @@ class RecommendationService {
   };
 
   static const _neutralColors = {'black', 'white', 'gray'};
+  static const _fashionNeutralColors = {'navy', 'brown', 'beige'};
 
   static const Map<String, Set<String>> _complementaryPairs = {
-    'blue': {'beige', 'white'},
-    'red': {'green', 'black', 'white'},
-    'green': {'red', 'beige'},
-    'beige': {'blue', 'green', 'black'},
+    'blue': {'beige', 'white', 'brown'},
+    'navy': {'beige', 'white', 'pink', 'yellow'},
+    'red': {'green', 'black', 'white', 'navy'},
+    'pink': {'navy', 'gray', 'green'},
+    'green': {'red', 'beige', 'brown'},
+    'beige': {'blue', 'green', 'black', 'navy'},
+    'brown': {'beige', 'navy', 'green', 'blue'},
+    'yellow': {'navy', 'gray', 'purple'},
+    'purple': {'white', 'beige', 'yellow'},
   };
 
   /// Generate top 3 outfit recommendations for a given user item.
   /// [preferredStyle] adds a bonus when recommended items match the user's preference.
+  /// [preferences] applies closet-affinity and feedback-based personalization.
   List<OutfitRecommendation> recommend(ClothingItem userItem,
-      {int maxResults = 3, String? preferredStyle}) {
+      {int maxResults = 3,
+      String? preferredStyle,
+      UserPreferences preferences = const UserPreferences()}) {
     final slot = userItem.slot;
     List<_Candidate> candidates = [];
 
@@ -64,7 +74,7 @@ class RecommendationService {
                 color: sColor,
                 style: _styleFor(shoes),
               );
-              final score = _scoreOutfit(userItem, [bottomItem, shoesItem], preferredStyle: preferredStyle);
+              final score = _scoreOutfit(userItem, [bottomItem, shoesItem], preferredStyle: preferredStyle, preferences: preferences);
               candidates.add(_Candidate([bottomItem, shoesItem], score));
             }
           }
@@ -80,7 +90,7 @@ class RecommendationService {
               color: sColor,
               style: _styleFor(shoes),
             );
-            final score = _scoreOutfit(userItem, [shoesItem], preferredStyle: preferredStyle);
+            final score = _scoreOutfit(userItem, [shoesItem], preferredStyle: preferredStyle, preferences: preferences);
             candidates.add(_Candidate([shoesItem], score));
           }
         }
@@ -99,7 +109,7 @@ class RecommendationService {
                   color: sColor,
                   style: _styleFor(shoes),
                 );
-                final score = _scoreOutfit(userItem, [outerItem, shoesItem], preferredStyle: preferredStyle);
+                final score = _scoreOutfit(userItem, [outerItem, shoesItem], preferredStyle: preferredStyle, preferences: preferences);
                 candidates.add(_Candidate([outerItem, shoesItem], score));
               }
             }
@@ -121,7 +131,7 @@ class RecommendationService {
                   color: sColor,
                   style: _styleFor(shoes),
                 );
-                final score = _scoreOutfit(userItem, [topItem, shoesItem], preferredStyle: preferredStyle);
+                final score = _scoreOutfit(userItem, [topItem, shoesItem], preferredStyle: preferredStyle, preferences: preferences);
                 candidates.add(_Candidate([topItem, shoesItem], score));
               }
             }
@@ -145,7 +155,7 @@ class RecommendationService {
                 color: bColor,
                 style: _styleFor(bottom),
               );
-              final score = _scoreOutfit(userItem, [topItem, bottomItem], preferredStyle: preferredStyle);
+              final score = _scoreOutfit(userItem, [topItem, bottomItem], preferredStyle: preferredStyle, preferences: preferences);
               candidates.add(_Candidate([topItem, bottomItem], score));
             }
           }
@@ -262,22 +272,70 @@ class RecommendationService {
 
   // ── Scoring ──
 
-  _Scores _scoreOutfit(ClothingItem user, List<ClothingItem> items, {String? preferredStyle}) {
+  _Scores _scoreOutfit(ClothingItem user, List<ClothingItem> items,
+      {String? preferredStyle,
+      UserPreferences preferences = const UserPreferences()}) {
     final all = [user, ...items];
     final catScore = _categoryCompatibility(all);
     final colScore = _colorHarmony(all);
     final styScore = _styleConsistency(all.map((i) => i.style).toList());
     var total = catScore * 0.4 + colScore * 0.35 + styScore * 0.25;
 
-    // Style preference bonus: +5% if recommended items align with user's preferred style
-    if (preferredStyle != null) {
-      final matchCount = items.where((i) => i.style == preferredStyle).length;
+    // ── Profile style preference bonus (max +5%) ──
+    final effectiveStyle = preferences.profileStyle ?? preferredStyle;
+    if (effectiveStyle != null) {
+      final matchCount = items.where((i) => i.style == effectiveStyle).length;
       if (matchCount > 0) {
         total += 0.05 * (matchCount / items.length);
       }
     }
 
+    // ── Closet affinity bonus (max ~5%) ──
+    if (preferences.hasClosetData) {
+      // Color affinity: reward recommending colors the user already owns (max +3%)
+      double colorBonus = 0;
+      for (final item in items) {
+        colorBonus += preferences.colorAffinity[item.color] ?? 0;
+      }
+      total += (colorBonus / items.length) * 0.03;
+
+      // Style affinity: reward matching closet style distribution (max +2%)
+      double styleBonus = 0;
+      for (final item in items) {
+        styleBonus += preferences.styleAffinity[item.style] ?? 0;
+      }
+      total += (styleBonus / items.length) * 0.02;
+    }
+
+    // ── Feedback bias (max ±4%) ──
+    if (preferences.hasFeedback) {
+      double feedbackBonus = 0;
+      int pairCount = 0;
+
+      for (final item in items) {
+        // Color pair: user item color ↔ recommended item color
+        final colorKey = _sortedPairKey(user.color, item.color);
+        final colorBias = preferences.colorPairBias[colorKey] ?? 0;
+        feedbackBonus += colorBias;
+
+        // Category pair: user item category ↔ recommended item category
+        final catKey = _sortedPairKey(user.category, item.category);
+        final catBias = preferences.categoryPairBias[catKey] ?? 0;
+        feedbackBonus += catBias;
+
+        pairCount += 2;
+      }
+
+      if (pairCount > 0) {
+        total += (feedbackBonus / pairCount) * 0.04;
+      }
+    }
+
     return _Scores(catScore, colScore, styScore, total.clamp(0.0, 1.0));
+  }
+
+  static String _sortedPairKey(String a, String b) {
+    return a.compareTo(b) <= 0 ? '$a|$b' : '$b|$a';
   }
 
   double _categoryCompatibility(List<ClothingItem> items) {
@@ -342,18 +400,26 @@ class RecommendationService {
   double _pairColorScore(String a, String b) {
     final aIsNeutral = _neutralColors.contains(a);
     final bIsNeutral = _neutralColors.contains(b);
+    final aIsFashionNeutral = _fashionNeutralColors.contains(a);
+    final bIsFashionNeutral = _fashionNeutralColors.contains(b);
 
-    // Both neutral — classic and safe
+    // Both pure neutral — classic and safe
     if (aIsNeutral && bIsNeutral) return 0.90;
-    // One neutral + one chromatic — versatile
+    // Pure neutral + fashion neutral — reliable
+    if ((aIsNeutral && bIsFashionNeutral) || (bIsNeutral && aIsFashionNeutral)) return 0.88;
+    // Both fashion neutral — earthy and cohesive
+    if (aIsFashionNeutral && bIsFashionNeutral) return 0.85;
+    // Pure neutral + chromatic — versatile
     if (aIsNeutral || bIsNeutral) return 0.85;
-    // Same chromatic — monochrome look
+    // Same color — monochrome look
     if (a == b) return 0.70;
     // Complementary pair
     if (_complementaryPairs[a]?.contains(b) == true ||
         _complementaryPairs[b]?.contains(a) == true) {
       return 0.80;
     }
+    // Fashion neutral + chromatic — grounding
+    if (aIsFashionNeutral || bIsFashionNeutral) return 0.78;
     // Other chromatic combos
     return 0.45;
   }

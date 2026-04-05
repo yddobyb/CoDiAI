@@ -4,6 +4,7 @@ class ClothingItem {
   final String category;
   final String color;
   final String style;
+  final String? season;
   final double confidence;
   final String? imagePath;
 
@@ -11,6 +12,7 @@ class ClothingItem {
     required this.category,
     required this.color,
     required this.style,
+    this.season,
     this.confidence = 0.0,
     this.imagePath,
   });
@@ -64,10 +66,15 @@ class ClothingItem {
       'black': Color(0xFF1A1A1A),
       'white': Color(0xFFF5F5F5),
       'gray': Color(0xFF808080),
+      'navy': Color(0xFF1A237E),
       'blue': Color(0xFF2962FF),
       'red': Color(0xFFD32F2F),
+      'pink': Color(0xFFE91E63),
+      'brown': Color(0xFF795548),
       'beige': Color(0xFFD2B48C),
       'green': Color(0xFF2E7D32),
+      'yellow': Color(0xFFFDD835),
+      'purple': Color(0xFF7B1FA2),
     };
     return colorMap[color] ?? const Color(0xFF808080);
   }
@@ -79,8 +86,25 @@ class ClothingItem {
   ];
 
   static const List<String> allColors = [
-    'black', 'white', 'gray', 'blue', 'red', 'beige', 'green',
+    'black', 'white', 'gray', 'navy', 'blue', 'red', 'pink',
+    'brown', 'beige', 'green', 'yellow', 'purple',
   ];
+
+  static const List<String> allSeasons = ['spring', 'summer', 'fall', 'winter'];
+
+  String get seasonIcon {
+    const map = {
+      'spring': '🌸', 'summer': '☀️', 'fall': '🍂', 'winter': '❄️',
+    };
+    return map[season] ?? '';
+  }
+
+  String get seasonLabel {
+    const map = {
+      'spring': 'Spring', 'summer': 'Summer', 'fall': 'Fall', 'winter': 'Winter',
+    };
+    return map[season] ?? '';
+  }
 
   static const List<String> topCategories = ['T-shirt', 'Shirt', 'Hoodie', 'Sweater'];
   static const List<String> outerCategories = ['Jacket', 'Coat'];
