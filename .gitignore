@@ -18,6 +18,7 @@ app/.idea/
 # ===== API keys & Config =====
 app/lib/core/config/api_keys.dart
 app/lib/core/config/supabase_config.dart
+app/lib/core/config/oauth_config.dart
 
 # ===== Logs =====
 *.log
@@ -33,6 +34,8 @@ fashion_launch_shopping_expansion_detailed_ko.docx
 fashion_mvp_codi_4weeks_detailed_ko.docx
 COMP4949_Assignment2_2026.docx
 tools/
+docs/
+
 
 # ===== OS / IDE / Claude =====
 .DS_Store

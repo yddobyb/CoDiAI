@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
@@ -14,6 +16,7 @@ class AuthScreen extends ConsumerStatefulWidget {
 class _AuthScreenState extends ConsumerState<AuthScreen> {
   bool _isLogin = true;
   bool _isLoading = false;
+  bool _isSocialLoading = false;
   String? _error;
   String? _success;
   final _emailController = TextEditingController();
@@ -51,22 +54,52 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             _isLogin = true;
           });
         } else {
-          // Auto-confirmed → already logged in
           Navigator.of(context).pop();
         }
       }
     } catch (e) {
-      final msg = e.toString().replaceFirst('Exception: ', '');
-      setState(() {
-        if (msg.contains('over_email_send_rate_limit') || msg.contains('429')) {
-          _error = 'Too many attempts. Please wait a moment and try again.';
-        } else {
-          _error = msg;
-        }
-      });
+      _handleError(e);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() { _isSocialLoading = true; _error = null; });
+    try {
+      await ref.read(authServiceProvider).signInWithGoogle();
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      _handleError(e);
+    } finally {
+      if (mounted) setState(() => _isSocialLoading = false);
+    }
+  }
+
+  Future<void> _signInWithApple() async {
+    setState(() { _isSocialLoading = true; _error = null; });
+    try {
+      await ref.read(authServiceProvider).signInWithApple();
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      _handleError(e);
+    } finally {
+      if (mounted) setState(() => _isSocialLoading = false);
+    }
+  }
+
+  void _handleError(Object e) {
+    if (!mounted) return;
+    final msg = e.toString().replaceFirst('Exception: ', '');
+    setState(() {
+      if (msg.contains('cancelled') || msg.contains('canceled')) {
+        _error = null; // User cancelled, no error
+      } else if (msg.contains('over_email_send_rate_limit') || msg.contains('429')) {
+        _error = 'Too many attempts. Please wait a moment and try again.';
+      } else {
+        _error = msg;
+      }
+    });
   }
 
   @override
@@ -95,9 +128,53 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondary),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 32),
 
-              // Email
+              // ── Social Login ──
+              _SocialButton(
+                onPressed: _isSocialLoading ? null : _signInWithGoogle,
+                icon: _googleIcon(),
+                label: 'Continue with Google',
+              ),
+              const SizedBox(height: 10),
+              if (Platform.isIOS) ...[
+                _SocialButton(
+                  onPressed: _isSocialLoading ? null : _signInWithApple,
+                  icon: const Icon(Icons.apple, size: 22),
+                  label: 'Continue with Apple',
+                  dark: true,
+                ),
+                const SizedBox(height: 10),
+              ],
+
+              if (_isSocialLoading) ...[
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Center(
+                    child: SizedBox(
+                      width: 20, height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accent),
+                    ),
+                  ),
+                ),
+              ],
+
+              // ── Divider ──
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Row(
+                  children: [
+                    Expanded(child: Divider(color: AppColors.border)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text('or', style: AppTypography.bodySmall.copyWith(color: AppColors.textTertiary)),
+                    ),
+                    Expanded(child: Divider(color: AppColors.border)),
+                  ],
+                ),
+              ),
+
+              // ── Email ──
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -195,6 +272,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     );
   }
 
+  Widget _googleIcon() {
+    return SizedBox(
+      width: 20,
+      height: 20,
+      child: CustomPaint(painter: _GoogleLogoPainter()),
+    );
+  }
+
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,
@@ -216,4 +301,81 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
     );
   }
+}
+
+// ── Social Login Button ──
+
+class _SocialButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final Widget icon;
+  final String label;
+  final bool dark;
+
+  const _SocialButton({
+    required this.onPressed,
+    required this.icon,
+    required this.label,
+    this.dark = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 50,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          backgroundColor: dark ? AppColors.primary : AppColors.surface,
+          foregroundColor: dark ? AppColors.textInverse : AppColors.textPrimary,
+          side: BorderSide(color: dark ? AppColors.primary : AppColors.border),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            icon,
+            const SizedBox(width: 12),
+            Text(label, style: AppTypography.bodyMedium.copyWith(
+              color: dark ? AppColors.textInverse : AppColors.textPrimary,
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Google "G" Logo Painter ──
+
+class _GoogleLogoPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double w = size.width;
+    final double h = size.height;
+    final center = Offset(w / 2, h / 2);
+    final radius = w / 2;
+
+    // Blue arc (top-right)
+    final bluePaint = Paint()..color = const Color(0xFF4285F4)..style = PaintingStyle.stroke..strokeWidth = w * 0.2;
+    canvas.drawArc(Rect.fromCircle(center: center, radius: radius * 0.7), -0.9, 1.8, false, bluePaint);
+
+    // Green arc (bottom-right)
+    final greenPaint = Paint()..color = const Color(0xFF34A853)..style = PaintingStyle.stroke..strokeWidth = w * 0.2;
+    canvas.drawArc(Rect.fromCircle(center: center, radius: radius * 0.7), 0.9, 1.2, false, greenPaint);
+
+    // Yellow arc (bottom-left)
+    final yellowPaint = Paint()..color = const Color(0xFFFBBC05)..style = PaintingStyle.stroke..strokeWidth = w * 0.2;
+    canvas.drawArc(Rect.fromCircle(center: center, radius: radius * 0.7), 2.1, 1.0, false, yellowPaint);
+
+    // Red arc (top-left)
+    final redPaint = Paint()..color = const Color(0xFFEA4335)..style = PaintingStyle.stroke..strokeWidth = w * 0.2;
+    canvas.drawArc(Rect.fromCircle(center: center, radius: radius * 0.7), -2.0, 1.1, false, redPaint);
+
+    // Horizontal bar
+    final barPaint = Paint()..color = const Color(0xFF4285F4)..style = PaintingStyle.fill;
+    canvas.drawRect(Rect.fromLTWH(w * 0.5, h * 0.38, w * 0.45, h * 0.24), barPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
