@@ -86,6 +86,69 @@ class ProductService {
     return data.map((row) => Product.fromMap(row)).toList();
   }
 
+  /// Find similar products using metadata matching.
+  /// Scores: category 0.40 + color 0.35 + style 0.25, sorted descending.
+  Future<List<Product>> findSimilar({
+    required String category,
+    required String color,
+    required String style,
+    String? excludeId,
+    int? minPrice,
+    int? maxPrice,
+    String? brandFilter,
+    int limit = 20,
+  }) async {
+    // Fetch candidates: same category OR same color (broader pool)
+    var query = _client
+        .from('products')
+        .select()
+        .or('category.eq.$category,color.eq.$color');
+
+    if (minPrice != null) query = query.gte('price', minPrice);
+    if (maxPrice != null) query = query.lte('price', maxPrice);
+    if (brandFilter != null) query = query.eq('brand', brandFilter);
+
+    final data = await query.limit(100);
+    var products = data.map((row) => Product.fromMap(row)).toList();
+
+    // Exclude source product
+    if (excludeId != null) {
+      products = products.where((p) => p.id != excludeId).toList();
+    }
+
+    // Score and sort
+    products.sort((a, b) {
+      final sa = _similarityScore(a, category, color, style);
+      final sb = _similarityScore(b, category, color, style);
+      return sb.compareTo(sa);
+    });
+
+    debugPrint('[Product] Found ${products.length} similar to $color $category');
+    return products.take(limit).toList();
+  }
+
+  double _similarityScore(Product p, String category, String color, String style) {
+    double score = 0;
+    if (p.category == category) score += 0.40;
+    if (p.color == color) score += 0.35;
+    if (p.style == style) score += 0.25;
+    return score;
+  }
+
+  /// Get distinct brand names from products table.
+  Future<List<String>> fetchBrands() async {
+    final data = await _client
+        .from('products')
+        .select('brand')
+        .order('brand');
+    final brands = (data as List)
+        .map((row) => row['brand'] as String)
+        .toSet()
+        .toList();
+    brands.sort();
+    return brands;
+  }
+
   /// Fetch products matching a recommended clothing item (category + color).
   Future<List<Product>> fetchMatchingProducts({
     required String category,

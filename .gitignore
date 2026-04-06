@@ -25,12 +25,14 @@ app/lib/core/config/supabase_config.dart
 # ===== 내부 문서 =====
 demo_script.md
 pt_script.md
+Fashion_Codi_AI_Assignment_Presentation.pptx
 plan.md
 fashion_ai_app_idea_detailed_ko.docx
 fashion_integrated_final_idea_detailed_ko.docx
 fashion_launch_shopping_expansion_detailed_ko.docx
 fashion_mvp_codi_4weeks_detailed_ko.docx
 COMP4949_Assignment2_2026.docx
+tools/
 
 # ===== OS / IDE / Claude =====
 .DS_Store

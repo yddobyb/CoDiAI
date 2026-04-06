@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../providers/premium_provider.dart';
 import '../../providers/service_providers.dart';
 import '../closet/closet_provider.dart';
 
@@ -32,7 +33,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     try {
       final profileService = ref.read(profileServiceProvider);
       final profile = await profileService.fetchProfile();
-      if (mounted) setState(() { _profile = profile; _isLoading = false; });
+      if (mounted) {
+        setState(() { _profile = profile; _isLoading = false; });
+        ref.invalidate(premiumProvider); // Refresh premium status
+      }
     } catch (e) {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -128,6 +132,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
         const SizedBox(height: 24),
 
+        // Premium badge
+        _buildPremiumCard(),
+        const SizedBox(height: 24),
+
         // Settings
         _SettingsTile(
           icon: Icons.person_outline,
@@ -152,6 +160,66 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           label: const Text('Sign Out'),
         ),
       ],
+    );
+  }
+
+  Widget _buildPremiumCard() {
+    final isPremium = ref.watch(premiumProvider).value ?? false;
+
+    if (isPremium) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [AppColors.accent, Color(0xFFD4A574)],
+          ),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.auto_awesome, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Premium', style: AppTypography.headingSmall.copyWith(color: Colors.white)),
+                  Text('Unlimited access', style: AppTypography.bodySmall.copyWith(color: Colors.white70)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return GestureDetector(
+      onTap: () => context.push('/premium'),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceVariant,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.accent.withAlpha(80)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.auto_awesome, color: AppColors.accent),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Upgrade to Premium', style: AppTypography.headingSmall),
+                  const SizedBox(height: 2),
+                  Text('Unlimited analyses & more', style: AppTypography.bodySmall),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: AppColors.textTertiary),
+          ],
+        ),
+      ),
     );
   }
 

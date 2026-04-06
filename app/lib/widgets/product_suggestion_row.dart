@@ -78,9 +78,16 @@ class _ProductSuggestionRowState extends ConsumerState<ProductSuggestionRow> {
                 style: AppTypography.labelMedium.copyWith(color: AppColors.accentDark),
               ),
               const Spacer(),
-              Text(
-                '${_products!.length} items',
-                style: AppTypography.bodySmall,
+              GestureDetector(
+                onTap: () => context.push('/similar', extra: {
+                  'category': widget.item.category,
+                  'color': widget.item.color,
+                  'style': widget.item.style,
+                }),
+                child: Text(
+                  'See all',
+                  style: AppTypography.labelSmall.copyWith(color: AppColors.accent),
+                ),
               ),
             ],
           ),

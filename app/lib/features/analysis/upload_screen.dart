@@ -87,7 +87,23 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
                     child: const Text('Get Outfit Ideas'),
                   ),
                   const SizedBox(height: 8),
-                  _buildSaveButton(state.result!),
+                  Row(
+                    children: [
+                      Expanded(child: _buildSaveButton(state.result!)),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => context.push('/similar', extra: {
+                            'category': state.result!.category,
+                            'color': state.result!.color,
+                            'style': state.result!.style,
+                          }),
+                          icon: const Icon(Icons.search, size: 18),
+                          label: const Text('Find Similar'),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

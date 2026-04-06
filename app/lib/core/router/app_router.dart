@@ -8,8 +8,10 @@ import '../../features/closet/closet_screen.dart';
 import '../../features/history/history_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/auth/auth_screen.dart';
+import '../../features/profile/premium_screen.dart';
 import '../../features/shop/shop_screen.dart';
 import '../../features/shop/product_detail_screen.dart';
+import '../../features/shop/product_list_screen.dart';
 import '../../models/product.dart';
 import '../../widgets/app_shell.dart';
 
@@ -166,6 +168,46 @@ final appRouter = GoRouter(
           },
         );
       },
+    ),
+    GoRoute(
+      path: '/similar',
+      name: 'similar',
+      parentNavigatorKey: _rootNavigatorKey,
+      redirect: (context, state) {
+        if (state.extra is! Map<String, String>) return '/shop';
+        return null;
+      },
+      pageBuilder: (context, state) {
+        final params = state.extra! as Map<String, String>;
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: ProductListScreen(
+            category: params['category']!,
+            color: params['color']!,
+            style: params['style']!,
+            excludeProductId: params['excludeId'],
+          ),
+          transitionsBuilder: (_, animation, secondaryAnimation, child) {
+            final tween = Tween(begin: const Offset(1.0, 0.0), end: Offset.zero)
+                .chain(CurveTween(curve: Curves.easeOutCubic));
+            return SlideTransition(position: animation.drive(tween), child: child);
+          },
+        );
+      },
+    ),
+    GoRoute(
+      path: '/premium',
+      name: 'premium',
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (context, state) => CustomTransitionPage(
+        key: state.pageKey,
+        child: const PremiumScreen(),
+        transitionsBuilder: (_, animation, secondaryAnimation, child) {
+          final tween = Tween(begin: const Offset(0, 1.0), end: Offset.zero)
+              .chain(CurveTween(curve: Curves.easeOutCubic));
+          return SlideTransition(position: animation.drive(tween), child: child);
+        },
+      ),
     ),
     GoRoute(
       path: '/auth',

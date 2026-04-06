@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/clothing_item.dart';
+import '../../providers/premium_provider.dart';
 import '../../providers/service_providers.dart';
 
 enum AnalysisStatus { idle, loadingModel, analyzing, done, error }
@@ -42,6 +43,10 @@ class AnalysisNotifier extends Notifier<AnalysisState> {
       state = state.copyWith(status: AnalysisStatus.analyzing);
       final result = await ml.predict(imagePath);
       state = AnalysisState(status: AnalysisStatus.done, result: result);
+
+      // Record usage
+      final isPremium = ref.read(premiumProvider).value ?? false;
+      ref.read(usageServiceProvider).recordAnalysis(isPremium: isPremium);
     } catch (e) {
       state = AnalysisState(
         status: AnalysisStatus.error,

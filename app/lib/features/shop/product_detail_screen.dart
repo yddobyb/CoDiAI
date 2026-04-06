@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../models/clothing_item.dart';
 import '../../models/product.dart';
+import '../../providers/service_providers.dart';
 
 class ProductDetailScreen extends ConsumerWidget {
   final Product product;
@@ -19,11 +20,11 @@ class ProductDetailScreen extends ConsumerWidget {
         slivers: [
           _buildAppBar(context),
           SliverToBoxAdapter(child: _buildInfo()),
-          SliverToBoxAdapter(child: _buildTags()),
+          SliverToBoxAdapter(child: _buildTags(context)),
           const SliverToBoxAdapter(child: SizedBox(height: 120)),
         ],
       ),
-      bottomSheet: _buildBottomBar(context),
+      bottomSheet: _buildBottomBar(context, ref),
     );
   }
 
@@ -86,7 +87,7 @@ class ProductDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTags() {
+  Widget _buildTags(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -105,6 +106,25 @@ class ProductDetailScreen extends ConsumerWidget {
               _tag(Icons.style_outlined, product.style),
               _tag(Icons.label_outlined, product.slotLabel),
             ],
+          ),
+          const SizedBox(height: 20),
+          // Find Similar button
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => context.push('/similar', extra: {
+                'category': product.category,
+                'color': product.color,
+                'style': product.style,
+                'excludeId': product.id,
+              }),
+              icon: const Icon(Icons.search, size: 18),
+              label: const Text('Find Similar Items'),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size(0, 44),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
           ),
           const SizedBox(height: 20),
         ],
@@ -158,7 +178,7 @@ class ProductDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBottomBar(BuildContext context) {
+  Widget _buildBottomBar(BuildContext context, WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
       decoration: const BoxDecoration(
@@ -196,7 +216,12 @@ class ProductDetailScreen extends ConsumerWidget {
             flex: 2,
             child: ElevatedButton.icon(
               onPressed: product.affiliateUrl != null
-                  ? () => _openLink(product.affiliateUrl!)
+                  ? () {
+                      ref.read(clickTrackingServiceProvider).trackClick(
+                        productId: product.id,
+                      );
+                      _openLink(product.affiliateUrl!);
+                    }
                   : null,
               icon: const Icon(Icons.open_in_new, size: 18),
               label: Text(product.affiliateUrl != null ? 'Buy Now' : 'Coming Soon'),

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../models/clothing_item.dart';
+import '../../providers/premium_provider.dart';
 import '../../widgets/outfit_card.dart';
 import '../../widgets/product_suggestion_row.dart';
 import 'recommendation_provider.dart';
@@ -96,7 +97,9 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                   );
                 }),
 
-                const SizedBox(height: 8),
+                // ── Promoted Brands ──
+                _buildPromotedBrands(),
+                const SizedBox(height: 16),
 
                 // ── Try Another ──
                 OutlinedButton.icon(
@@ -106,6 +109,72 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                 ),
               ],
             ),
+    );
+  }
+
+  Widget _buildPromotedBrands() {
+    final isPremium = ref.watch(premiumProvider).value ?? false;
+    if (isPremium) return const SizedBox.shrink();
+
+    const brands = [
+      {'name': 'Aritzia', 'tagline': 'Everyday luxury'},
+      {'name': 'Garage', 'tagline': 'Trendy & affordable'},
+      {'name': 'Oak + Fort', 'tagline': 'Minimal aesthetic'},
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(Icons.local_offer_outlined, size: 14, color: AppColors.textTertiary),
+            const SizedBox(width: 6),
+            Text(
+              'Featured Brands',
+              style: AppTypography.labelMedium.copyWith(color: AppColors.textTertiary),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 72,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: brands.length,
+            separatorBuilder: (_, _) => const SizedBox(width: 10),
+            itemBuilder: (context, index) {
+              final brand = brands[index];
+              return GestureDetector(
+                onTap: () => context.go('/shop'),
+                child: Container(
+                  width: 150,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceMuted,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.borderLight),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        brand['name']!,
+                        style: AppTypography.labelMedium.copyWith(fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        brand['tagline']!,
+                        style: AppTypography.labelSmall,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
