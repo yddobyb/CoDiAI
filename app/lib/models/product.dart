@@ -5,7 +5,7 @@ class Product {
   final String category;
   final String color;
   final String style;
-  final int price;
+  final double price;
   final String imageUrl;
   final String? affiliateUrl;
   final DateTime createdAt;
@@ -31,14 +31,17 @@ class Product {
       category: map['category'] as String,
       color: map['color'] as String,
       style: map['style'] as String,
-      price: (map['price'] as num).toInt(),
+      price: (map['price'] as num).toDouble(),
       imageUrl: map['image_url'] as String,
       affiliateUrl: map['affiliate_url'] as String?,
       createdAt: DateTime.parse(map['created_at'] as String),
     );
   }
 
-  String get formattedPrice => '\$$price';
+  String get formattedPrice {
+    if (price == price.truncateToDouble()) return '\$${price.toInt()}';
+    return '\$${price.toStringAsFixed(2)}';
+  }
 
   String get slot {
     const slotMap = {
