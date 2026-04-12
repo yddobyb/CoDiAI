@@ -61,7 +61,6 @@ for name, price, color, url, img in [
     ("Ribbed Mini T-Shirt",14.90,"black","https://www.uniqlo.com/ca/en/products/E484457-000/00","https://image.uniqlo.com/UQ/ST3/ca/imagesgoods/484457/item/cagoods_50_484457_3x4.jpg?width=300"),
     ("Striped Mini T-Shirt",14.90,"white","https://www.uniqlo.com/ca/en/products/E483535-000/00","https://image.uniqlo.com/UQ/ST3/ca/imagesgoods/483535/item/cagoods_01_483535_3x4.jpg?width=300"),
     ("AIRism Cotton Oversized T-Shirt",19.90,"brown","https://www.uniqlo.com/ca/en/products/E465185-000/00","https://image.uniqlo.com/UQ/ST3/ca/imagesgoods/465185/item/cagoods_69_465185_3x4.jpg?width=300"),
-    ("AIRism Cotton T-Shirt",19.90,"white","https://www.uniqlo.com/ca/en/products/E465293-000/00","https://image.uniqlo.com/UQ/ST3/ca/imagesgoods/465293/item/cagoods_01_465293_3x4.jpg?width=300"),
 ]:
     products.append({"name":name,"brand":"UNIQLO","cat":"T-shirt","color":color,"style":"casual","price":str(price),"image_url":img,"url":url})
 
@@ -260,7 +259,6 @@ for name, price, color, url, img in [
     ("Oversized Tie Shirt",55.90,"pink","https://www.zara.com/ca/en/oversized-tie-shirt-p02484268.html","https://static.zara.net/assets/public/a3f4/8733/63fa4f95a2c5/129e367e4147/02484268633-p/02484268633-p.jpg?ts=1775055815038&w=1809"),
     ("Embroidered Blouse",45.90,"white","https://www.zara.com/ca/en/embroidered-blouse-p08741022.html","https://static.zara.net/assets/public/9056/f0b9/5da44efdb31c/ac7d98f56530/08741022250-000-f1/08741022250-000-f1.jpg?ts=1772009957363&w=1769"),
     ("Satin Effect Shirt",45.90,"black","https://www.zara.com/ca/en/satin-effect-shirt-p04764004.html","https://static.zara.net/assets/public/745f/222d/7bb3418f9b0a/2af58392b1ae/07521001700-p/07521001700-p.jpg?ts=1775065426741&w=1809"),
-    ("ZW Collection Poplin Bib Shirt",79.90,"white","https://www.zara.com/ca/en/zw-collection-poplin-bib-shirt-p06097362.html","https://static.zara.net/assets/public/b3a6/7130/6e184b126940/2a6158175883/06097362000-000-f1/06097362000-000-f1.jpg?ts=1775136880552&w=1769"),
 ]:
     products.append({"name":name,"brand":"ZARA","cat":"Shirt","color":color,"style":"casual","price":str(price),"image_url":img,"url":url})
 
@@ -282,7 +280,6 @@ for name, price, color, cat, url, img in [
     ("Metallic Flat Fisherman Sandals",65.90,"beige","Flats","https://www.zara.com/ca/en/metallic-effect-flat-fisherman-sandals-p11652710.html","https://static.zara.net/assets/public/ac83/4068/802b4b62a07f/db7dd69a5766/05129047658-000-p/05129047658-000-p.jpg?ts=1775056379365&w=1809"),
     ("Flat Leather Sandals Red",69.90,"red","Flats","https://www.zara.com/ca/en/flat-leather-sandals-p11616710.html","https://static.zara.net/assets/public/a8d3/14e6/a4954c9b8e8c/3d9ea0554792/04088046406-p/04088046406-p.jpg?ts=1775055409098&w=1809"),
     ("Sparkly Strap Sandals",79.90,"beige","Heels","https://www.zara.com/ca/en/sparkly-strap-sandals-p12820710.html","https://static.zara.net/assets/public/a041/6c6b/1b51420eabc9/de3a5b5d9b63/12820710098-ult39/12820710098-ult39.jpg?ts=1772723563656&w=1809"),
-    ("Braided Effect Flat Ballet Flats",69.90,"beige","Flats","https://www.zara.com/ca/en/braided-effect-flat-ballet-flats-p13521710.html","https://static.zara.net/assets/public/b5bf/b7ec/6ac54d568d8c/315ff626d165/13521710098-ult41/13521710098-ult41.jpg?ts=1772723563656&w=1809"),
 ]:
     products.append({"name":name,"brand":"ZARA","cat":cat,"color":color,"style":"formal" if cat=="Heels" else "casual","price":str(price),"image_url":img,"url":url})
 
@@ -317,8 +314,264 @@ for name, price, color, url, img in [
 ]:
     products.append({"name":name,"brand":"Oak+Fort","cat":"Hoodie","color":color,"style":"sporty","price":str(price),"image_url":img,"url":url})
 
-# Aritzia Sweater
-products.append({"name":"Golightly Cardigan","brand":"Aritzia","cat":"Sweater","color":"beige","style":"casual","price":"118.00","image_url":"https://assets.aritzia.com/image/upload/c_crop,ar_1920:2623,g_south/q_auto,f_auto,dpr_auto/s26_a03_132752_4425_on_d","url":"https://www.aritzia.com/en/product/golightly-cardigan/114360.html"})
+# ══════════════════════════════════════════════════════════════
+# Round 3 — Additional scraping (2026-04-11)
+# ══════════════════════════════════════════════════════════════
+
+# H&M Sneakers (Round 3)
+for name, price, color, url, img in [
+    ("Retro Sneakers Gray",49.99,"gray","https://www2.hm.com/en_ca/productpage.1273075012.html","https://image.hm.com/assets/hm/46/2c/462cd953cc286c0bb269bb96991cdb692f90ff93.jpg?imwidth=1536"),
+    ("Chunky Sneakers White",59.99,"white","https://www2.hm.com/en_ca/productpage.1208972001.html","https://image.hm.com/assets/hm/e0/ef/e0ef2d2884c209c92c6ef74a85a0c3d73a3a1d47.jpg?imwidth=1536"),
+    ("Retro Sneakers Beige",49.99,"beige","https://www2.hm.com/en_ca/productpage.1273075011.html","https://image.hm.com/assets/hm/f8/1a/f81a609864080ec0de4ad0aa5f97ba777aaf4033.jpg?imwidth=1536"),
+    ("Retro Sneakers Red",49.99,"red","https://www2.hm.com/en_ca/productpage.1273075007.html","https://image.hm.com/assets/hm/5c/d2/5cd28882aec8b81cf1235c15ddd74e3abe189533.jpg?imwidth=1536"),
+    ("Leather Sneakers Brown",129.00,"brown","https://www2.hm.com/en_ca/productpage.1319011002.html","https://image.hm.com/assets/hm/8c/88/8c8834085b6f2ee288a21e6bac9cd447f102ad91.jpg?imwidth=1536"),
+    ("Twill Sneakers Beige",44.99,"beige","https://www2.hm.com/en_ca/productpage.1319863001.html","https://image.hm.com/assets/hm/bd/5b/bd5becb35006aa7d014f00e91cf9c815ada071c3.jpg?imwidth=1536"),
+    ("Retro Sneakers Brown",49.99,"brown","https://www2.hm.com/en_ca/productpage.1273075013.html","https://image.hm.com/assets/hm/9a/5a/9a5ae37cb2948c30a9ef14b41395f60a956ac99d.jpg?imwidth=1536"),
+    ("Twill Sneakers White",44.99,"white","https://www2.hm.com/en_ca/productpage.1319863002.html","https://image.hm.com/assets/hm/4c/1b/4c1b56bb2822f110036b7c4415b1f85fd03bd791.jpg?imwidth=1536"),
+    ("Platform Sneakers Beige",49.99,"beige","https://www2.hm.com/en_ca/productpage.1312674001.html","https://image.hm.com/assets/hm/2d/41/2d41aeb7596b09b772e4c78ee6f0d7d97253da1a.jpg?imwidth=1536"),
+    ("Chunky Sneakers Pink",59.99,"pink","https://www2.hm.com/en_ca/productpage.1208972010.html","https://image.hm.com/assets/hm/72/e7/72e7694a15fbf5d29a98186fd31069b6137145a4.jpg?imwidth=1536"),
+    ("Retro Sneakers Yellow",49.99,"yellow","https://www2.hm.com/en_ca/productpage.1273075010.html","https://image.hm.com/assets/hm/f2/d1/f2d18821423d5f548ce36fe63f53a0951ca76825.jpg?imwidth=1536"),
+    ("Platform Sneakers Beige",49.99,"beige","https://www2.hm.com/en_ca/productpage.1312674002.html","https://image.hm.com/assets/hm/cf/8c/cf8c0ac9b526da66157436046ef53a7c673413f0.jpg?imwidth=1536"),
+    ("Suede Sneakers Beige",99.00,"beige","https://www2.hm.com/en_ca/productpage.1324858001.html","https://image.hm.com/assets/hm/68/68/6868fe871435e244d676ca269739046c7da70780.jpg?imwidth=1536"),
+    ("Low-Top Sneakers Blue",59.99,"blue","https://www2.hm.com/en_ca/productpage.1268920008.html","https://image.hm.com/assets/hm/12/85/1285610f6420d5f4b3e5b54cc9feb58ad671597a.jpg?imwidth=1536"),
+    ("Mesh High Tops Beige",59.99,"beige","https://www2.hm.com/en_ca/productpage.1312676001.html","https://image.hm.com/assets/hm/1b/04/1b0451fbbaa55004cd4d4bfa17dc6c131393add5.jpg?imwidth=1536"),
+    ("Crochet-Look Sneakers Red",59.99,"red","https://www2.hm.com/en_ca/productpage.1319862001.html","https://image.hm.com/assets/hm/8c/9b/8c9b32f50b2d3fd0e1af8a4dbe2f81f0744765d2.jpg?imwidth=1536"),
+    ("Low-Top Sneakers Red",59.99,"red","https://www2.hm.com/en_ca/productpage.1268920009.html","https://image.hm.com/assets/hm/bd/81/bd81c9d57680ce91f9dacb6fdebe8b9bcbf7cb78.jpg?imwidth=1536"),
+    ("Leather Sneakers Beige",129.00,"beige","https://www2.hm.com/en_ca/productpage.1319011001.html","https://image.hm.com/assets/hm/8c/1c/8c1c532a249f3d151ae4db0666fd741791150817.jpg?imwidth=1536"),
+    ("Canvas Sneakers White",44.99,"white","https://www2.hm.com/en_ca/productpage.1290585001.html","https://image.hm.com/assets/hm/6f/2b/6f2bfde24e567430dfc0b0aa4b348f649abc3a9b.jpg?imwidth=1536"),
+    ("Suede Sneakers Brown",99.00,"brown","https://www2.hm.com/en_ca/productpage.1312658001.html","https://image.hm.com/assets/hm/3c/60/3c60c7bb648a61d3d5389df64ffb6c36443a9055.jpg?imwidth=1536"),
+    ("Retro Sneakers Burgundy",49.99,"red","https://www2.hm.com/en_ca/productpage.1273075009.html","https://image.hm.com/assets/hm/67/76/6776c7661e60ca9282bc81b17c23be7d6a7f7db6.jpg?imwidth=1536"),
+    ("Premium Sneakers White",129.00,"white","https://www2.hm.com/en_ca/productpage.1324713001.html","https://image.hm.com/assets/hm/30/10/30106bf3d7dd61da079ab56007278ecf0c9b90e6.jpg?imwidth=1536"),
+    ("Classic Sneakers White",44.99,"white","https://www2.hm.com/en_ca/productpage.1208965001.html","https://image.hm.com/assets/hm/b5/5b/b55befe5d14745e38419c28f070382d95b01d472.jpg?imwidth=1536"),
+    ("Classic Sneakers Beige",44.99,"beige","https://www2.hm.com/en_ca/productpage.1208965027.html","https://image.hm.com/assets/hm/26/5f/265fc80678dc97d53d6b431b097aa5b23d85261e.jpg?imwidth=1536"),
+    ("Premium Sneakers Black",129.00,"black","https://www2.hm.com/en_ca/productpage.1324701001.html","https://image.hm.com/assets/hm/91/70/917070e54603ec688b53966b819c962f913f6bd2.jpg?imwidth=1536"),
+    ("Chunky Sneakers Brown",59.99,"brown","https://www2.hm.com/en_ca/productpage.1208972009.html","https://image.hm.com/assets/hm/a4/24/a424a5a052f4a7567b6e73de962fb94ad6d8dde8.jpg?imwidth=1536"),
+]:
+    products.append({"name":name,"brand":"H&M","cat":"Sneakers","color":color,"style":"casual","price":str(price),"image_url":img,"url":url})
+
+# Zara Shorts (Round 3)
+for name, price, color, url, img in [
+    ("Z1975 Mom Fit Shorts",45.90,"blue","https://www.zara.com/ca/en/z1975-mom-fit-shorts-p07223038.html","https://static.zara.net/assets/public/b09e/4e0c/3fd04e5c8662/a87af0c8a0aa/07223038427-p/07223038427-p.jpg?ts=1775645647371&w=1849"),
+    ("Sequin Lace Shorts",55.90,"white","https://www.zara.com/ca/en/sequined-lace-shorts-p04813330.html","https://static.zara.net/assets/public/b0d2/1b97/88e44e289e2b/19c9a90a79e4/04813330250-a1/04813330250-a1.jpg?ts=1775572242019&w=1849"),
+    ("TRF Low-Rise Denim Mini Shorts",39.90,"blue","https://www.zara.com/ca/en/trf-low-rise-denim-mini-shorts-p04365003.html","https://static.zara.net/assets/public/d5cb/421d/3c8e408aa2c9/303212f5c4a4/00699001407-e1/00699001407-e1.jpg?ts=1775486490485&w=1849"),
+    ("TRF Ripped High-Waisted Shorts",45.90,"black","https://www.zara.com/ca/en/trf-ripped-high-waisted-denim-shorts-p04365001.html","https://static.zara.net/assets/public/d277/5499/96824ee284ac/6fedfc2b0b9f/05252002800-p/05252002800-p.jpg?ts=1775680853818&w=1849"),
+    ("ZW Collection Linen Shorts",65.90,"pink","https://www.zara.com/ca/en/zw-collection-linen-shorts-p04344040.html","https://static.zara.net/assets/public/824a/c36d/1c704029ae6f/0eecc90dd7a0/04344040619-a1/04344040619-a1.jpg?ts=1774949046384&w=1849"),
+    ("Embroidered Shorts",69.90,"beige","https://www.zara.com/ca/en/embroidered-shorts-p05770025.html","https://static.zara.net/assets/public/1c0b/3c3b/ece242839a20/54701af3a80c/05770024712-p/05770024712-p.jpg?ts=1772636268104&w=1849"),
+    ("Satin Effect Lace Mini Shorts",39.90,"beige","https://www.zara.com/ca/en/satin-effect-lace-mini-shorts-p01255427.html","https://static.zara.net/assets/public/3294/2024/9c8b4b6a9333/2fbd080ad2ca/05919124500-p/05919124500-p.jpg?ts=1774003342691&w=1849"),
+    ("Mini Striped Shorts",39.90,"pink","https://www.zara.com/ca/en/mini-striped-shorts-p05063858.html","https://static.zara.net/assets/public/f748/678e/b7d34e2b8e66/99ce8ed8907e/05063858620-p/05063858620-p.jpg?ts=1775052064193&w=1849"),
+    ("Lace Trim Shorts",55.90,"black","https://www.zara.com/ca/en/lace-trim-shorts-p02194827.html","https://static.zara.net/assets/public/d94e/d3fd/e50f475faae1/a9c86071a1f6/02194827800-p/02194827800-p.jpg?ts=1774005481182&w=1849"),
+    ("Mini Pocket Shorts",45.90,"black","https://www.zara.com/ca/en/mini-pocket-shorts-p03067420.html","https://static.zara.net/assets/public/deae/7f68/57254a04a1cb/8f3c100affd9/03067410044-a2/03067410044-a2.jpg?ts=1771259883401&w=1849"),
+]:
+    products.append({"name":name,"brand":"ZARA","cat":"Shorts","color":color,"style":"casual","price":str(price),"image_url":img,"url":url})
+
+# Zara Jackets/Coats (Round 3)
+for name, price, color, cat, style, url, img in [
+    ("Faux Leather Jacket",139.00,"black","Jacket","casual","https://www.zara.com/ca/en/faux-leather-jacket-p04391892.html","https://static.zara.net/assets/public/1ab2/2525/e79347469d55/6d8787a6603f/04341892700-a2/04341892700-a2.jpg?ts=1771940730323&w=1809"),
+    ("Faux Leather Bomber Jacket",139.00,"beige","Jacket","casual","https://www.zara.com/ca/en/faux-leather-bomber-jacket-p04749752.html","https://static.zara.net/assets/public/761f/8857/49274555bb79/fd035850df85/04749752733-a1/04749752733-a1.jpg?ts=1771937012908&w=1809"),
+    ("Hooded Balloon Jacket",79.90,"black","Jacket","sporty","https://www.zara.com/ca/en/hooded-balloon-jacket-p08372095.html","https://static.zara.net/assets/public/7349/779b/d5554c74bc5d/2dd5d8dd7f8a/08372095715-a3/08372095715-a3.jpg?ts=1772636272438&w=1809"),
+    ("Belted Linen Safari Jacket",79.90,"brown","Jacket","casual","https://www.zara.com/ca/en/belted-linen-safari-jacket-p02587801.html","https://static.zara.net/assets/public/7b72/b7b5/a0cb4d7c8b7c/a2218faf3911/02587801309-a2/02587801309-a2.jpg?ts=1774886074953&w=1809"),
+    ("Crochet Lapel Safari Jacket",89.90,"beige","Jacket","casual","https://www.zara.com/ca/en/crochet-lapel-safari-jacket-p08372063.html","https://static.zara.net/assets/public/8952/7d54/f0cb49a4b197/d6e8b6a59841/08372063075-p/08372063075-p.jpg?ts=1773851106197&w=1809"),
+    ("Linen Belted Trench Coat",99.90,"green","Coat","formal","https://www.zara.com/ca/en/linen-blend-belted-trench-jacket-p02753364.html","https://static.zara.net/assets/public/d809/4e91/e5524654b075/d279143a0028/02753364510-a2/02753364510-a2.jpg?ts=1774884878384&w=1809"),
+    ("Washed Effect Short Trench Coat",75.90,"brown","Coat","casual","https://www.zara.com/ca/en/washed-effect-short-trench-coat-p02634787.html","https://static.zara.net/assets/public/9aaa/d810/5ff7469fa552/927e553915e8/02634787704-p/02634787704-p.jpg?ts=1774015564797&w=1809"),
+    ("High Collar Jacket",89.90,"white","Jacket","formal","https://www.zara.com/ca/en/high-collar-jacket-p06929270.html","https://static.zara.net/assets/public/3464/8799/0d91453191f8/ad00531be264/06929270251-p/06929270251-p.jpg?ts=1772715144658&w=1809"),
+    ("Tailored Blazer with Lapel Buttons",109.00,"brown","Jacket","formal","https://www.zara.com/ca/en/tailored-buttoned-lapel-blazer-p02736494.html","https://static.zara.net/assets/public/116b/afa6/e89449058f2e/3cb61358f8c9/02736494707-000-p/02736494707-000-p.jpg?ts=1774885635368&w=1809"),
+]:
+    products.append({"name":name,"brand":"ZARA","cat":cat,"color":color,"style":style,"price":str(price),"image_url":img,"url":url})
+
+# Zara Pants (Round 3)
+for name, price, color, url, img in [
+    ("Oversize Cargo Pants",65.90,"black","https://www.zara.com/ca/en/oversized-cargo-pants-p01300015.html","https://static.zara.net/assets/public/9425/dc5f/2d9a47d28050/1677e8a4997a/01300015800-p/01300015800-p.jpg?ts=1773250011390&w=1809"),
+    ("ZW Linen Barrel Pants Mauve",79.90,"pink","https://www.zara.com/ca/en/zw-collection-linen-barrel-pants-p04344045.html","https://static.zara.net/assets/public/5285/e1ea/025248d08224/d8af274b6227/04344045619-f1/04344045619-f1.jpg?ts=1773995339310&w=1769"),
+    ("Elastic Waist Barrel Pants",59.90,"gray","https://www.zara.com/ca/en/barrel-pants-with-elastic-waist-p01478020.html","https://static.zara.net/assets/public/40ed/6a12/e53549ea9a19/6e1119060d0c/01478020922-f1/01478020922-f1.jpg?ts=1770907427178&w=1769"),
+    ("Linen Straight Leg Pants",59.90,"beige","https://www.zara.com/ca/en/linen-straight-leg-pants-p09929141.html","https://static.zara.net/assets/public/263c/249e/c84b4e85bc52/393cb728aa33/09929141052-f1/09929141052-f1.jpg?ts=1774942925307&w=1769"),
+    ("Barrel Pants Rose",59.90,"pink","https://www.zara.com/ca/en/barrel-pants-with-elastic-waist-p01478020.html","https://static.zara.net/assets/public/8230/6278/29ff4a5a8656/d664d104ce7e/01478020622-f1/01478020622-f1.jpg?ts=1770907423266&w=1769"),
+    ("ZW Linen Barrel Pants Brown",79.90,"brown","https://www.zara.com/ca/en/zw-collection-linen-barrel-pants-p04344045.html","https://static.zara.net/assets/public/da85/3796/d60549228f12/c534f956a29d/04344045700-f1/04344045700-f1.jpg?ts=1773995332378&w=1769"),
+    ("Drawstring Satin Pants",55.90,"black","https://www.zara.com/ca/en/drawstring-satin-pants-p02180415.html","https://static.zara.net/assets/public/20ff/1d13/72f447bc93e9/3edcf4b9ff6f/03152442800-f1/03152442800-f1.jpg?ts=1774939660437&w=1769"),
+    ("ZW Vented Linen Pants",69.90,"black","https://www.zara.com/ca/en/zw-collection-linen-pants-with-vents-p01936334.html","https://static.zara.net/assets/public/cf36/deea/4f2d4ea58389/676ab77fb61a/04344041800-f1/04344041800-f1.jpg?ts=1774948148996&w=1769"),
+    ("Wide-Leg Linen Pants",69.90,"brown","https://www.zara.com/ca/en/wide-leg-linen-pants-p02574771.html","https://static.zara.net/assets/public/be9e/0961/26aa4fc1b2f5/0db3c3a2bc90/02574771700-f1/02574771700-f1.jpg?ts=1772624051807&w=1769"),
+    ("ZW Striped Barrel Pants",69.90,"white","https://www.zara.com/ca/en/zw-collection-striped-barrel-pants-p01928355.html","https://static.zara.net/assets/public/9f5e/31e9/2f4d4d8fb5a8/bd52155fc7b7/01928355104-f1/01928355104-f1.jpg?ts=1774355023427&w=1769"),
+    ("Elastic Waist Pants Curry",65.90,"yellow","https://www.zara.com/ca/en/elastic-waist-pants-p01255413.html","https://static.zara.net/assets/public/8414/ddd7/450e478e89fc/17f5acda6fa8/04661417809-f1/04661417809-f1.jpg?ts=1773826182457&w=1769"),
+    ("Flare Linen Pants",79.90,"yellow","https://www.zara.com/ca/en/flowy-linen-blend-pants-with-slits-p02602801.html","https://static.zara.net/assets/public/a208/b4eb/a11840e8add8/45baaccc02c3/04786056802-000-a4/04786056802-000-a4.jpg?ts=1774956671123&w=1809"),
+]:
+    products.append({"name":name,"brand":"ZARA","cat":"Pants","color":color,"style":"casual","price":str(price),"image_url":img,"url":url})
+
+# Zara T-shirts (Round 3)
+for name, price, color, url, img in [
+    ("Rib Sleeveless Top",22.90,"white","https://www.zara.com/ca/en/rib-sleeveless-top-p02335180.html","https://static.zara.net/assets/public/00d8/8ada/b71a45ce9a66/163d3e228f73/02335180711-a1/02335180711-a1.jpg?ts=1775490574875&w=1809"),
+    ("Ribbed Sleeveless Top",15.90,"white","https://www.zara.com/ca/en/ribbed-sleeveless-top-p03253301.html","https://static.zara.net/assets/public/c01e/4980/05ae42b7a253/4e26c88cf3d8/05862051406-a2/05862051406-a2.jpg?ts=1770033673032&w=1809"),
+    ("Fluid Shoulder Pad T-Shirt",35.90,"black","https://www.zara.com/ca/en/fluid-sleeveless-shoulder-pad-top-p05644029.html","https://static.zara.net/assets/public/c8dc/33da/0360471d8c6b/5142b9cc3b2e/05644043800-000-a1/05644043800-000-a1.jpg?ts=1775660533174&w=1809"),
+    ("Cotton V-Neck T-Shirt",19.90,"white","https://www.zara.com/ca/en/cotton-v-neck-t-shirt-p04174301.html","https://static.zara.net/assets/public/e0f5/e0de/4e5341d3ab1e/9bdb5d2b4b77/04174301250-a1/04174301250-a1.jpg?ts=1770981852895&w=1809"),
+    ("Raised Flower T-Shirt",32.90,"white","https://www.zara.com/ca/en/raised-floral-t-shirt-p04805032.html","https://static.zara.net/assets/public/4ab3/ae06/a39947ca9006/fe95c3abc0d2/04805032250-a1/04805032250-a1.jpg?ts=1775664932752&w=1809"),
+    ("Off-The-Shoulder T-Shirt",22.90,"black","https://www.zara.com/ca/en/off-the-shoulder-t-shirt-p02335179.html","https://static.zara.net/assets/public/fa9e/ec98/dcd946c18168/c46d4ec6350b/02335179800-a2/02335179800-a2.jpg?ts=1775062927622&w=1809"),
+    ("Embroidered Rib T-Shirt",32.90,"white","https://www.zara.com/ca/en/embroidered-rib-short-sleeve-t-shirt-p05643036.html","https://static.zara.net/assets/public/6fbd/4c77/0bfc462ca7fa/1cb5bcfb4361/05643036250-p/05643036250-p.jpg?ts=1775638268067&w=1809"),
+]:
+    products.append({"name":name,"brand":"ZARA","cat":"T-shirt","color":color,"style":"casual","price":str(price),"image_url":img,"url":url})
+
+# Zara Skirts (Round 3)
+for name, price, color, url, img in [
+    ("Polka Dot Satin Midi Skirt",45.90,"black","https://www.zara.com/ca/en/satin-effect-midi-skirt-p08338537.html","https://static.zara.net/assets/public/2b43/8448/eae84c5f82f6/913f6091da05/08338404070-p/08338404070-p.jpg?ts=1774970886875&w=1809"),
+    ("Animal Print Tulle Skirt",39.90,"brown","https://www.zara.com/ca/en/animal-print-tulle-skirt-p05039408.html","https://static.zara.net/assets/public/2b93/5fda/0b084bec92df/a39a46cf821a/05039408042-p/05039408042-p.jpg?ts=1775476118147&w=1809"),
+    ("Wrinkled Knit Midi Skirt",65.90,"gray","https://www.zara.com/ca/en/wrinkled-effect-knit-midi-skirt-p02893016.html","https://static.zara.net/assets/public/97c5/cc7c/46bd47339453/b7d54295bdef/02893016081-p/02893016081-p.jpg?ts=1774619602982&w=1809"),
+    ("Ramie Plaid Midi Skirt",99.90,"blue","https://www.zara.com/ca/en/ramie-plaid-midi-skirt-zw-collection-p04043036.html","https://static.zara.net/assets/public/0557/9fa4/cdfe47cf84b2/625c02d77cd9/04043036406-a1/04043036406-a1.jpg?ts=1774857520493&w=1809"),
+    ("Asymmetric Skort",55.90,"black","https://www.zara.com/ca/en/asymmetric-skort-with-applique-p01971241.html","https://static.zara.net/assets/public/efcb/7bf2/395d4c7db94e/dfbba43e4d52/01971241800-a1/01971241800-a1.jpg?ts=1775046636397&w=1809"),
+    ("Sequin Mini Skirt",55.90,"brown","https://www.zara.com/ca/en/sequin-mini-skirt-p02157058.html","https://static.zara.net/assets/public/64bb/e2e0/47cd4562a50e/2e53757e1622/02157058870-a2/02157058870-a2.jpg?ts=1775062922128&w=1809"),
+    ("Satin Midi Skirt",55.90,"brown","https://www.zara.com/ca/en/satin-midi-skirt-p08160399.html","https://static.zara.net/assets/public/a372/7685/57f4428eaafa/2ab539e095d4/08160399700-p/08160399700-p.jpg?ts=1765876073632&w=1809"),
+    ("Faux Leather Belted Midi Skirt",65.90,"brown","https://www.zara.com/ca/en/faux-leather-belted-midi-skirt-p04387245.html","https://static.zara.net/assets/public/9bed/a58b/0a3d417ca2dc/aecf6138c191/04387245681-a4/04387245681-a4.jpg?ts=1766505936532&w=1809"),
+    ("Wrap Midi Skirt",55.90,"green","https://www.zara.com/ca/en/wrap-midi-skirt-p04391446.html","https://static.zara.net/assets/public/a101/2101/5f8147e3a34c/b0ec3eb6446d/04391446644-p/04391446644-p.jpg?ts=1774371058466&w=1809"),
+    ("Layered Midi Skirt",45.90,"white","https://www.zara.com/ca/en/layered-midi-skirt-p04387079.html","https://static.zara.net/assets/public/f066/1f4b/0d064a33a5a9/ae53e5e9d6bf/04387060250-a3/04387060250-a3.jpg?ts=1772806183354&w=1809"),
+]:
+    products.append({"name":name,"brand":"ZARA","cat":"Skirt","color":color,"style":"casual","price":str(price),"image_url":img,"url":url})
+
+# Zara Jeans (Round 3)
+for name, price, color, url, img in [
+    ("TRF Mid-Rise Belted Jeans",69.90,"blue","https://www.zara.com/ca/en/trf-mid-rise-belted-jeans-p08727029.html","https://static.zara.net/assets/public/0ca2/ea08/25f94f1c9488/4dce87a8ae10/402100ecea16cb963fc2384477a09484/402100ecea16cb963fc2384477a09484.jpg?ts=1775687173552&w=1824"),
+    ("TRF High Waist Wide Leg Jeans",65.90,"blue","https://www.zara.com/ca/en/trf-high-waist-wide-leg-jeans-p05575229.html","https://static.zara.net/assets/public/54a5/62b1/06244f9ba703/c53d202aac11/f4f2062fc8b860126dc3fe05039684aa/f4f2062fc8b860126dc3fe05039684aa.jpg?ts=1775045503495&w=1824"),
+    ("ZW Ankle Relaxed Jeans",65.90,"blue","https://www.zara.com/ca/en/zw-collection-ankle-relaxed-mid-rise-jeans-p08307045.html","https://static.zara.net/assets/public/9162/4ec9/9f4640e4a606/1fbfd5fdd9ce/0a3c1dde02d7d57739b439db5c7dc7f1/0a3c1dde02d7d57739b439db5c7dc7f1.jpg?ts=1774868605719&w=1824"),
+    ("TRF Mid-Rise Fold-Up Straight Jeans",55.90,"blue","https://www.zara.com/ca/en/trf-mid-rise-fold-up-straight-leg-jeans-p04730139.html","https://static.zara.net/assets/public/31f5/b42b/a4a541d2b2af/563fe5f54c8f/image-2dsk-993cbac3-a814-4b02-9adc-75b26c1a2214-default/image-2dsk-993cbac3-a814-4b02-9adc-75b26c1a2214-default.jpg?ts=1774887291699&w=1824"),
+    ("TRF Folded Waist Mid-Rise Jeans",69.90,"blue","https://www.zara.com/ca/en/trf-folded-waist-mid-rise-jeans-p05252014.html","https://static.zara.net/assets/public/6989/f003/751743629be4/3e516eda946b/56bdd11be111d399ad16e9a76824cf49/56bdd11be111d399ad16e9a76824cf49.jpg?ts=1774643394021&w=1824"),
+    ("Z1975 Wide Leg Dart Jeans",65.90,"blue","https://www.zara.com/ca/en/z1975-mid-rise-wide-leg-jeans-with-darts-p01416026.html","https://static.zara.net/assets/public/b7f5/619d/c09d4c05bea3/8083c2df4db4/01416026724-f1/01416026724-f1.jpg?ts=1772005360692&w=1824"),
+    ("Z1975 High-Waist Mom Fit Jeans",55.90,"blue","https://www.zara.com/ca/en/z-05-high-waist-mom-fit-jeans-p04083022.html","https://static.zara.net/assets/public/b1a8/9b53/af2d4c6786ff/a27414e403d9/7588fddd0098c603b319f0661c13038e/7588fddd0098c603b319f0661c13038e.jpg?ts=1775042074961&w=1824"),
+    ("Z1975 High Waist Straight Jeans",59.90,"blue","https://www.zara.com/ca/en/z1975-high-waist-straight-long-length-jeans-p08228021.html","https://static.zara.net/assets/public/8b8a/a487/556b4146b3c8/9ca1b15de9a6/f033f99594f67fc6aee725d1e8847007/f033f99594f67fc6aee725d1e8847007.jpg?ts=1775041277475&w=1824"),
+    ("TRF Mid-Rise Baggy Balloon Jeans",65.90,"blue","https://www.zara.com/ca/en/trf-mid-rise-baggy-balloon-jeans-p05762040.html","https://static.zara.net/assets/public/0a02/30d0/45ce41429d8c/8a4aaf8a3ef3/image-2dsk-4e807059-97ad-4064-a308-c960ffb6acfd-default/image-2dsk-4e807059-97ad-4064-a308-c960ffb6acfd-default.jpg?ts=1774951296790&w=1824"),
+    ("ZW High-Waist Wide Leg Jeans",65.90,"blue","https://www.zara.com/ca/en/zw-collection-high-waist-wide-leg-jeans-p08246053.html","https://static.zara.net/assets/public/882f/ccfc/1425485289b9/e88a4744725b/08307251407-f1/08307251407-f1.jpg?ts=1769216578711&w=1824"),
+    ("TRF Low Rise Wide Leg Jeans",65.90,"blue","https://www.zara.com/ca/en/trf-low-rise-wide-leg-jeans-p08727022.html","https://static.zara.net/assets/public/a937/b8d1/397a4e0388b0/c8b7ed86c5e8/06929022422-f1/06929022422-f1.jpg?ts=1769013665708&w=1824"),
+    ("TRF High-Waist Wide Leg Jeans Dark",65.90,"black","https://www.zara.com/ca/en/trf-high-waist-wide-leg-jeans-p06688226.html","https://static.zara.net/assets/public/b2c3/a1f1/024147818586/40d30d42dc66/06688226400-f1/06688226400-f1.jpg?ts=1770039467396&w=1824"),
+]:
+    products.append({"name":name,"brand":"ZARA","cat":"Jeans","color":color,"style":"casual","price":str(price),"image_url":img,"url":url})
+
+# Zara Knitwear/Sweaters (Round 3)
+for name, price, color, url, img in [
+    ("Puff Sleeve Cardigan",65.90,"navy","https://www.zara.com/ca/en/cardigan-with-puff-sleeves-and-slits-p04192080.html","https://static.zara.net/assets/public/33e1/c591/4c0a416993fb/9f0055c52eef/04192080401-p/04192080401-p.jpg?ts=1775552282286&w=1809"),
+    ("Fine Knit V-Neck Jumper",55.90,"black","https://www.zara.com/ca/en/fine-knit-v-neck-jumper-p08779006.html","https://static.zara.net/assets/public/0230/6a81/d1c4453db789/716d116ab2b6/08779006800-a1/08779006800-a1.jpg?ts=1775645478201&w=1809"),
+    ("Floral Textured Knit Halter Top",79.90,"beige","https://www.zara.com/ca/en/floral-textured-knit-halter-top-p03920171.html","https://static.zara.net/assets/public/437e/58d7/192c489c9e4f/22846a6ea3d0/03920171710-a3/03920171710-a3.jpg?ts=1775552276548&w=1809"),
+    ("Fringed Knit Top",55.90,"beige","https://www.zara.com/ca/en/fringed-knit-top-p03920295.html","https://static.zara.net/assets/public/9b94/07f1/430846ebb3b7/8f3bb25091b2/03920295712-a1/03920295712-a1.jpg?ts=1775552277868&w=1809"),
+    ("Short Sleeve Knit Jacket",55.90,"beige","https://www.zara.com/ca/en/short-sleeve-knit-cardigan-with-lace-trim-p03920182.html","https://static.zara.net/assets/public/c085/aa63/27b548b9b91b/8a9243182930/03920182834-a1/03920182834-a1.jpg?ts=1770811029749&w=1809"),
+    ("Cropped Knit Jumper",79.90,"beige","https://www.zara.com/ca/en/cropped-knit-jumper-with-intertwined-tape-p00021012.html","https://static.zara.net/assets/public/e89d/597c/99ce457fba63/ee316e11d008/00021012712-a1/00021012712-a1.jpg?ts=1775638360881&w=1809"),
+    ("Knit Jacket with Bows",79.90,"pink","https://www.zara.com/ca/en/knit-jacket-with-bows-p09598022.html","https://static.zara.net/assets/public/8801/d7d5/6d5e48c4ae75/c87db3e1d3d8/09598022046-a1/09598022046-a1.jpg?ts=1774267250805&w=1809"),
+    ("Flowy V-Neck Jumper",45.90,"white","https://www.zara.com/ca/en/flowy-v-neck-jumper-p03471006.html","https://static.zara.net/assets/public/0b27/a547/a0b74033b7e0/6592b3a01b5c/00858038250-1-a1/00858038250-1-a1.jpg?ts=1772191932353&w=1809"),
+    ("Beaded Neck Knit Top",59.90,"blue","https://www.zara.com/ca/en/knit-beaded-neck-top-p03921034.html","https://static.zara.net/assets/public/5f20/14d6/7187409b9be1/a2b2730e6a57/03921034400-p/03921034400-p.jpg?ts=1775662018322&w=1809"),
+    ("Knit Corset Top",55.90,"black","https://www.zara.com/ca/en/knit-corset-top-p02142122.html","https://static.zara.net/assets/public/1f5c/55d3/5923d18477b7/0d1c2d56f508/02142142212-a1/02142142212-a1.jpg?ts=1775657510010&w=1809"),
+    ("V-Neck Knit Jumper",69.90,"beige","https://www.zara.com/ca/en/v-neck-knit-jumper-p02142216.html","https://static.zara.net/assets/public/fb40/deeb/23f90a10b7dc/148742da7fba/02142221612-a1/02142221612-a1.jpg?ts=1775657510077&w=1809"),
+    ("Ribbed Knit Halter Top",35.90,"black","https://www.zara.com/ca/en/ribbed-knit-halter-top-p03519002.html","https://static.zara.net/assets/public/fc79/6257/65dc420a9698/1a71c6f28da3/06236025303-p/06236025303-p.jpg?ts=1775657512409&w=1809"),
+]:
+    products.append({"name":name,"brand":"ZARA","cat":"Sweater","color":color,"style":"casual","price":str(price),"image_url":img,"url":url})
+
+# Zara Dresses (Round 3)
+for name, price, color, url, img in [
+    ("ZW Linen Midi Dress",99.90,"beige","https://www.zara.com/ca/en/zw-collection-linen-midi-dress-p04786048.html","https://static.zara.net/assets/public/0886/a18c/f4fb462381b6/33b312685bb6/04786048802-p/04786048802-p.jpg?ts=1774949052568&w=1809"),
+    ("ZW Linen Blend Midi Dress",129.00,"gray","https://www.zara.com/ca/en/zw-collection-linen-blend-midi-dress-p02103901.html","https://static.zara.net/assets/public/7cd7/ffb7/734445c68d85/25d204e1da27/02103901081-a1/02103901081-a1.jpg?ts=1774949037102&w=1809"),
+    ("Gingham Check Shirt Dress",99.90,"green","https://www.zara.com/ca/en/gingham-check-shirt-dress-zw-collection-p02507041.html","https://static.zara.net/assets/public/26eb/15e6/2da4455eb848/e97889bbbeba/02507041500-h1/02507041500-h1.jpg?ts=1770386339684&w=1809"),
+    ("Flowy Long Dress",65.90,"black","https://www.zara.com/ca/en/flowy-long-dress-p05644026.html","https://static.zara.net/assets/public/8899/2630/85e94a6fa4a9/07efcca07f13/05644026800-1-p/05644026800-1-p.jpg?ts=1773665737998&w=1809"),
+    ("Belted Linen Midi Dress",79.90,"blue","https://www.zara.com/ca/en/belted-linen-blend-midi-dress-p04745035.html","https://static.zara.net/assets/public/29a7/7148/4faf47498a48/28eb2a67cdc3/04745035400-p/04745035400-p.jpg?ts=1773412578951&w=1809"),
+    ("Combination Midi Dress",79.90,"gray","https://www.zara.com/ca/en/combination-midi-dress-p03897187.html","https://static.zara.net/assets/public/30e1/2c62/4e6c43b0a193/d5127b36f157/03897187809-p/03897187809-p.jpg?ts=1768567583312&w=1809"),
+    ("Gingham Midi Dress",69.90,"blue","https://www.zara.com/ca/en/gingham-check-midi-dress-p03152308.html","https://static.zara.net/assets/public/f9e8/8afa/5cf9487786dc/a978854e6f67/03152308044-p/03152308044-p.jpg?ts=1769788009831&w=1809"),
+    ("Trench Midi Dress",69.90,"beige","https://www.zara.com/ca/en/trench-midi-dress-p03067310.html","https://static.zara.net/assets/public/76f9/ef12/db87494492f3/f3222d3017b3/03067310726-p/03067310726-p.jpg?ts=1769789946887&w=1809"),
+    ("Short Knotted Shirtdress",79.90,"blue","https://www.zara.com/ca/en/short-knotted-shirtdress-p02689859.html","https://static.zara.net/assets/public/7de7/15f8/8d9743b291b4/d55b587c5f11/02689859044-a1/02689859044-a1.jpg?ts=1774455299468&w=1809"),
+    ("Striped Lace Mini Dress",69.90,"pink","https://www.zara.com/ca/en/striped-lace-mini-dress-p02581532.html","https://static.zara.net/assets/public/d054/59a9/0dae44418900/985120ddff2c/02581532620-a1/02581532620-a1.jpg?ts=1774344737582&w=1809"),
+    ("ZW Asymmetric Midi Dress",99.90,"red","https://www.zara.com/ca/en/zw-collection-asymmetric-midi-dress-p02102098.html","https://static.zara.net/assets/public/d818/2684/c99b4589a1a7/17d73afcb7fc/02102099632-a2/02102099632-a2.jpg?ts=1774611533942&w=1809"),
+    ("ZW Printed Dress with Ties",149.00,"yellow","https://www.zara.com/ca/en/zw-collection-printed-dress-with-ties-p02109098.html","https://static.zara.net/assets/public/4ac4/1ecc/4aed413a9acd/cd48341b0b71/02109098300-p/02109098300-p.jpg?ts=1774611541228&w=1809"),
+    ("Striped Belted Midi Dress",79.90,"yellow","https://www.zara.com/ca/en/striped-belted-midi-dress-p03293054.html","https://static.zara.net/assets/public/3ce7/f9bf/3e6340d7bbad/dab71e0bbba4/03293054047-p/03293054047-p.jpg?ts=1774009907867&w=1809"),
+    ("Striped Mini Dress",65.90,"red","https://www.zara.com/ca/en/striped-mini-dress-p03293055.html","https://static.zara.net/assets/public/8365/2cd1/4bb04f2487c4/e8ea6224bdec/03293055061-a1/03293055061-a1.jpg?ts=1774009907751&w=1809"),
+    ("Belted Midi Dress Brown",79.90,"brown","https://www.zara.com/ca/en/belted-midi-dress-p02343572.html","https://static.zara.net/assets/public/78f7/a845/4f31467a81ce/1af94df76f5e/02343572700-p/02343572700-p.jpg?ts=1769615292799&w=1809"),
+    ("Cut Out Lace Dress",65.90,"black","https://www.zara.com/ca/en/lace-cut-out-dress-p01067002.html","https://static.zara.net/assets/public/db56/2759/c7134210b104/7f752d9e4390/05030019800-p/05030019800-p.jpg?ts=1774614243295&w=1809"),
+    ("Combination Lace Dress",65.90,"black","https://www.zara.com/ca/en/combination-lace-dress-p01067004.html","https://static.zara.net/assets/public/e74e/45b1/f6bf4a4796a2/686ab6a25d53/05039020800-p/05039020800-p.jpg?ts=1774614282344&w=1809"),
+    ("Belted Striped Halter Dress",45.90,"brown","https://www.zara.com/ca/en/striped-halter-dress-with-belt-p05063353.html","https://static.zara.net/assets/public/4c86/9bf6/8aa34b8cbdcb/a0169de02cc9/05063353178-h/05063353178-h.jpg?ts=1775052058429&w=1809"),
+    ("Halter Swing Dress Yellow",65.90,"yellow","https://www.zara.com/ca/en/swing-halter-dress-p02739111.html","https://static.zara.net/assets/public/a47b/f0d9/b6da416f9e7e/6121957c1693/02739111300-a1/02739111300-a1.jpg?ts=1775064957420&w=1809"),
+    ("Swing Halter Dress White",65.90,"white","https://www.zara.com/ca/en/halter-swing-dress-p03152380.html","https://static.zara.net/assets/public/e701/7e09/f6fd4ed79daf/f2d45bb69357/03152380251-p/03152380251-p.jpg?ts=1775052502188&w=1809"),
+    ("Long Tulle Dress",65.90,"brown","https://www.zara.com/ca/en/long-combination-tulle-dress-p05584354.html","https://static.zara.net/assets/public/beb9/d8c5/d7fc41d7b992/4dc2584fb617/05584354716-a2/05584354716-a2.jpg?ts=1771432734088&w=1809"),
+    ("Ruffled Mini Dress",65.90,"white","https://www.zara.com/ca/en/ruffled-mini-dress-p07521329.html","https://static.zara.net/assets/public/c971/600e/ac3341828cb3/b5a0e1ef42b5/07521329250-p/07521329250-p.jpg?ts=1775052086854&w=1809"),
+    ("Short Textured Dress",55.90,"beige","https://www.zara.com/ca/en/short-textured-dress-p05067276.html","https://static.zara.net/assets/public/2707/0a4b/790849ccb279/03c5f4b0fd2f/05067276712-a1/05067276712-a1.jpg?ts=1775032929204&w=1809"),
+    ("Floral Print Bow Belt Dress",89.90,"pink","https://www.zara.com/ca/en/floral-print-bow-belt-dress-p02298057.html","https://static.zara.net/assets/public/a03e/6093/454841889f9b/6d33b4d29155/02298057330-p/02298057330-p.jpg?ts=1772198709624&w=1809"),
+    ("Floral Satin Midi Dress",69.90,"white","https://www.zara.com/ca/en/floral-satin-effect-midi-dress-p02742306.html","https://static.zara.net/assets/public/069f/f50d/9e6147ac9b60/fc24549f836c/02742306252-p/02742306252-p.jpg?ts=1774970840746&w=1809"),
+    ("Puff Sleeve Short Dress",79.90,"white","https://www.zara.com/ca/en/short-balloon-sleeve-dress-p03897114.html","https://static.zara.net/assets/public/7a10/8d70/fdf54144be38/15188c083573/03897114064-h1/03897114064-h1.jpg?ts=1775046640074&w=1809"),
+    ("Flowy Halter Dress",65.90,"blue","https://www.zara.com/ca/en/flowy-halter-dress-p06929089.html","https://static.zara.net/assets/public/194a/32c1/4b304b2ca1b2/cde824ac5ba2/06929089406-p/06929089406-p.jpg?ts=1774971514595&w=1809"),
+    ("Satin Mini Dress with Sash",55.90,"white","https://www.zara.com/ca/en/satin-effect-sash-mini-dress-p02745533.html","https://static.zara.net/assets/public/7ef5/932e/1bd240979241/f5bce214737d/02745533300-a1/02745533300-a1.jpg?ts=1774971516883&w=1809"),
+]:
+    products.append({"name":name,"brand":"ZARA","cat":"Dress","color":color,"style":"casual","price":str(price),"image_url":img,"url":url})
+
+# H&M Tops (Round 3)
+for name, price, color, cat, url, img in [
+    ("Linen-Blend Lace-Detail Top",24.99,"white","T-shirt","https://www2.hm.com/en_ca/productpage.1341362001.html","https://image.hm.com/assets/hm/c1/7d/c17d6b3193bb8d9a957104136b93be6ba19ec698.jpg?imwidth=1536"),
+    ("Short Rugby Shirt",24.99,"yellow","Shirt","https://www2.hm.com/en_ca/productpage.1342507001.html","https://image.hm.com/assets/hm/43/5d/435dac685a605c7abbc23614ede6b993f8ff069f.jpg?imwidth=1536"),
+    ("Strappy Top with Eyelet Embroidery",24.99,"white","T-shirt","https://www2.hm.com/en_ca/productpage.1335330001.html","https://image.hm.com/assets/hm/02/b6/02b68ddc6b995d2ab6391adbacbfb6b6c0355860.jpg?imwidth=1536"),
+    ("Rib-Knit Polo Shirt",24.99,"yellow","Shirt","https://www2.hm.com/en_ca/productpage.1340104001.html","https://image.hm.com/assets/hm/93/dd/93dda515999e1349fd6f4ec81038deb206925123.jpg?imwidth=1536"),
+]:
+    products.append({"name":name,"brand":"H&M","cat":cat,"color":color,"style":"casual","price":str(price),"image_url":img,"url":url})
+
+# H&M Jeans (Round 3)
+for name, price, color, url, img in [
+    ("Wide-Leg Jeans",24.99,"blue","https://www2.hm.com/en_ca/productpage.1341364001.html","https://image.hm.com/assets/hm/ba/99/ba99041cc4fde0072d78d33093cba12172964129.jpg?imwidth=1536"),
+    ("Barrel Leg Regular Waist Jeans",24.99,"beige","https://www2.hm.com/en_ca/productpage.1329166001.html","https://image.hm.com/assets/hm/af/23/af23850bca54f18833d7cfb5578e66e1238591d1.jpg?imwidth=1536"),
+]:
+    products.append({"name":name,"brand":"H&M","cat":"Jeans","color":color,"style":"casual","price":str(price),"image_url":img,"url":url})
+
+# H&M Dresses & Boots (Round 3)
+for name, price, color, cat, style, url, img in [
+    ("Pintuck Dress with Lace Panel",24.99,"beige","Dress","casual","https://www2.hm.com/en_ca/productpage.1340684001.html","https://image.hm.com/assets/hm/b5/c6/b5c632bf9a8afe3054c59fcd4b41f96a09d97432.jpg?imwidth=1536"),
+    ("Knee-High Boots Brown",84.99,"brown","Boots","casual","https://www2.hm.com/en_ca/productpage.1291799002.html","https://image.hm.com/assets/hm/92/26/922674796767528f877c90b434de0e4b3d11be6f.jpg?imwidth=1536"),
+    ("Cowboy Boots",84.99,"brown","Boots","casual","https://www2.hm.com/en_ca/productpage.1320067001.html","https://image.hm.com/assets/hm/ac/d8/acd8da325293a335cf522304629094e2d9011d54.jpg?imwidth=1536"),
+    ("Pointed-Toe Ankle Boots",59.99,"beige","Boots","formal","https://www2.hm.com/en_ca/productpage.1312618002.html","https://image.hm.com/assets/hm/eb/90/eb905a681ff2433f693593a57798a298d340da37.jpg?imwidth=1536"),
+]:
+    products.append({"name":name,"brand":"H&M","cat":cat,"color":color,"style":style,"price":str(price),"image_url":img,"url":url})
+
+# H&M Flats (Round 3)
+for name, price, color, url, img in [
+    ("Deck Shoes Beige",109.00,"beige","https://www2.hm.com/en_ca/productpage.1264544006.html","https://image.hm.com/assets/hm/ae/a1/aea129759bdff12997a1799677d2f7777c90946b.jpg?imwidth=1536"),
+    ("Deck Shoes Brown",44.99,"brown","https://www2.hm.com/en_ca/productpage.1313100001.html","https://image.hm.com/assets/hm/40/9a/409a652bdcf5142a577c8e36d3358f44bd29b6d7.jpg?imwidth=1536"),
+    ("Leopard Deck Shoes",44.99,"brown","https://www2.hm.com/en_ca/productpage.1313100005.html","https://image.hm.com/assets/hm/31/4f/314fe3b660b87ce8d0fa7d8ea81b936d51dcf42f.jpg?imwidth=1536"),
+    ("Leather Deck Shoes",99.00,"brown","https://www2.hm.com/en_ca/productpage.1319372001.html","https://image.hm.com/assets/hm/b2/45/b24566ebc482b7b0e13c24de0994cbdda8a25c3f.jpg?imwidth=1536"),
+]:
+    products.append({"name":name,"brand":"H&M","cat":"Flats","color":color,"style":"casual","price":str(price),"image_url":img,"url":url})
+
+# H&M Heels (Round 3)
+for name, price, color, url, img in [
+    ("Heeled Espadrilles",74.99,"beige","https://www2.hm.com/en_ca/productpage.1324440001.html","https://image.hm.com/assets/hm/79/b4/79b42e8ecd984af6f3884437a19bb5992ffd2a62.jpg?imwidth=1536"),
+    ("Kitten-Heeled Sandals Beige",34.99,"beige","https://www2.hm.com/en_ca/productpage.1321306002.html","https://image.hm.com/assets/hm/29/ee/29eeda8b5b053394287aa646694796bc6d4a06d6.jpg?imwidth=1536"),
+    ("Block-Heeled Pumps Beige",49.99,"beige","https://www2.hm.com/en_ca/productpage.1321315002.html","https://image.hm.com/assets/hm/70/50/705015f4a4d3f8f3e7f1d6eff521cfafd91f186a.jpg?imwidth=1536"),
+    ("Wedge-Heeled Sandals Black",59.99,"black","https://www2.hm.com/en_ca/productpage.1331703001.html","https://image.hm.com/assets/hm/b0/9b/b09b2cbdd24ec3a5d420360cd1b2e245347745ae.jpg?imwidth=1536"),
+    ("Pointed Suede Slingbacks Green",74.99,"green","https://www2.hm.com/en_ca/productpage.1312645002.html","https://image.hm.com/assets/hm/e2/4e/e24efa287126c7fef2ad31a9cbef390921ecf36d.jpg?imwidth=1536"),
+    ("Slingback Court Shoes",44.99,"beige","https://www2.hm.com/en_ca/productpage.1338744001.html","https://image.hm.com/assets/hm/70/6c/706c08290d0c4c69353ecf33d40a54325280ac07.jpg?imwidth=1536"),
+    ("Slingback Pumps Black",34.99,"black","https://www2.hm.com/en_ca/productpage.1301685014.html","https://image.hm.com/assets/hm/ae/0a/ae0a91afdd0b61cee6ceffd963233cf94278e5e4.jpg?imwidth=1536"),
+    ("Wedge-Heeled Sandals Platform",74.99,"black","https://www2.hm.com/en_ca/productpage.1328912001.html","https://image.hm.com/assets/hm/bd/d6/bdd6fb87e60a095c3f9dd739c5913eafbe12f284.jpg?imwidth=1536"),
+    ("Pointed Suede Slingbacks Beige",74.99,"beige","https://www2.hm.com/en_ca/productpage.1312645004.html","https://image.hm.com/assets/hm/b1/ad/b1ad842c960546f09c9b357d677566995e298b16.jpg?imwidth=1536"),
+    ("Wedge-Heeled Sandals Brown",64.99,"brown","https://www2.hm.com/en_ca/productpage.1321286002.html","https://image.hm.com/assets/hm/ae/82/ae8222bcce65ed7ca7f21e6448755eb449d46b83.jpg?imwidth=1536"),
+    ("Kitten-Heeled Slingbacks Brown",34.99,"brown","https://www2.hm.com/en_ca/productpage.1321306001.html","https://image.hm.com/assets/hm/05/4d/054dab22e6518e96f4871e5a4bb33d408f7faccf.jpg?imwidth=1536"),
+    ("Kitten-Heeled Pointed Slingbacks",39.99,"beige","https://www2.hm.com/en_ca/productpage.1291726002.html","https://image.hm.com/assets/hm/52/6d/526d09329b05ea4448b0db8cfb997551afed63e8.jpg?imwidth=1536"),
+    ("Heeled Platform Clogs",84.99,"brown","https://www2.hm.com/en_ca/productpage.1328020001.html","https://image.hm.com/assets/hm/7b/61/7b6156cb33cbe66cb07577559401b5c7cc3068fb.jpg?imwidth=1536"),
+    ("Block-Heeled Platform Sandals",59.99,"beige","https://www2.hm.com/en_ca/productpage.1332803001.html","https://image.hm.com/assets/hm/cc/0b/cc0b7f9bd5ab211c336f8308665d957b91661ebf.jpg?imwidth=1536"),
+    ("Heeled Espadrilles Brown",64.99,"brown","https://www2.hm.com/en_ca/productpage.1320438001.html","https://image.hm.com/assets/hm/c6/9d/c69daeb1d58e9530def10ff43c1193b451929abb.jpg?imwidth=1536"),
+    ("Kitten-Heeled Slingbacks Beige",39.99,"beige","https://www2.hm.com/en_ca/productpage.1321484002.html","https://image.hm.com/assets/hm/30/81/308127a595bd859bf8ae422355420066adbb60db.jpg?imwidth=1536"),
+    ("Kitten-Heeled Leather Slingbacks",109.00,"brown","https://www2.hm.com/en_ca/productpage.1328018001.html","https://image.hm.com/assets/hm/df/9a/df9ac761966c77d12990e1266c2bd17d525230f6.jpg?imwidth=1536"),
+    ("Kitten-Heeled Slingbacks Taupe",34.99,"brown","https://www2.hm.com/en_ca/productpage.1312648001.html","https://image.hm.com/assets/hm/7f/99/7f9983ca29de3a05b138c5cc3fd5b7530b933a60.jpg?imwidth=1536"),
+    ("Heeled Suede Sandals Green",84.99,"green","https://www2.hm.com/en_ca/productpage.1320361001.html","https://image.hm.com/assets/hm/56/49/56495876f188a2fd373044335d96ca023de4e9e9.jpg?imwidth=1536"),
+    ("Bow-Detail Satin Pumps Red",49.99,"red","https://www2.hm.com/en_ca/productpage.1310105002.html","https://image.hm.com/assets/hm/97/a0/97a097046da32b671ed08ab2f4078c0f26e9af16.jpg?imwidth=1536"),
+    ("Block-Heeled Pumps Red",49.99,"red","https://www2.hm.com/en_ca/productpage.1321315003.html","https://image.hm.com/assets/hm/fc/1a/fc1aa602a8ce3f210275b4d7f78343336868f9f6.jpg?imwidth=1536"),
+    ("Heeled Leather Sandals Red",84.99,"red","https://www2.hm.com/en_ca/productpage.1321459002.html","https://image.hm.com/assets/hm/56/a6/56a6fa203abd9d59602489f848cad8a85fce2d67.jpg?imwidth=1536"),
+    ("Pointed Suede Slingbacks Brown",74.99,"brown","https://www2.hm.com/en_ca/productpage.1312645001.html","https://image.hm.com/assets/hm/d0/35/d0354779372ab33e572f72909d97c5a746065cb2.jpg?imwidth=1536"),
+    ("Heeled Slingbacks Brown",59.99,"brown","https://www2.hm.com/en_ca/productpage.1321467002.html","https://image.hm.com/assets/hm/5b/81/5b817706dbcc4d776e2644106b712c6a6d5e87af.jpg?imwidth=1536"),
+    ("Pointed Satin Pumps Brown",49.99,"brown","https://www2.hm.com/en_ca/productpage.1304321003.html","https://image.hm.com/assets/hm/c1/df/c1dfbc318f4967c6c8d2f1e51696df295a244f7e.jpg?imwidth=1536"),
+    ("Bow-Detail Velour Pumps Brown",44.99,"brown","https://www2.hm.com/en_ca/productpage.1304320003.html","https://image.hm.com/assets/hm/d5/38/d5380bd1355fe5bb1a7e5027720dcdf19c00b8df.jpg?imwidth=1536"),
+    ("Block-Heeled Sandals Black",64.99,"black","https://www2.hm.com/en_ca/productpage.1337021001.html","https://image.hm.com/assets/hm/17/90/1790c14341e10b670bae498bce803550ba062acc.jpg?imwidth=1536"),
+    ("Pointed Suede Slingbacks Khaki",74.99,"green","https://www2.hm.com/en_ca/productpage.1312645003.html","https://image.hm.com/assets/hm/42/d5/42d5c1ff32626aa26cc8452a37054b1c0d447a0a.jpg?imwidth=1536"),
+    ("Heeled Sandals Cream",59.99,"beige","https://www2.hm.com/en_ca/productpage.1320360001.html","https://image.hm.com/assets/hm/3b/fe/3bfe11d3151d1a574610a238104a2f0edca7f7f2.jpg?imwidth=1536"),
+    ("Heeled Sandals Brown",59.99,"brown","https://www2.hm.com/en_ca/productpage.1320360002.html","https://image.hm.com/assets/hm/ac/ae/acae108dc4ccc06e7e8f910337318be0d8455b32.jpg?imwidth=1536"),
+    ("Kitten-Heeled Slingbacks Green",44.99,"green","https://www2.hm.com/en_ca/productpage.1321486001.html","https://image.hm.com/assets/hm/6e/68/6e68d9d93529e81b09453c8b7c479d419373d68d.jpg?imwidth=1536"),
+    ("Kitten-Heeled Leather Slingbacks Beige",84.99,"beige","https://www2.hm.com/en_ca/productpage.1321447002.html","https://image.hm.com/assets/hm/42/db/42dbc73eff1c9dbbbf9b0f45407f42a16a6e8961.jpg?imwidth=1536"),
+    ("Heeled Strappy Sandals Green",44.99,"green","https://www2.hm.com/en_ca/productpage.1321299002.html","https://image.hm.com/assets/hm/e9/60/e960f14a28ac17270ea7b9c711592eda2d5edde7.jpg?imwidth=1536"),
+    ("Pointed Satin Pumps Black",49.99,"black","https://www2.hm.com/en_ca/productpage.1304321001.html","https://image.hm.com/assets/hm/48/6e/486e00ef9b41229a5b1700d01dff074ca148b0c1.jpg?imwidth=1536"),
+    ("Heeled Suede Sandals Brown",84.99,"brown","https://www2.hm.com/en_ca/productpage.1320361002.html","https://image.hm.com/assets/hm/9a/61/9a61bcd16f74206e6ac0981ad513815ae24c9e1e.jpg?imwidth=1536"),
+]:
+    products.append({"name":name,"brand":"H&M","cat":"Heels","color":color,"style":"formal","price":str(price),"image_url":img,"url":url})
+
+# H&M Shorts & Jacket (Round 3)
+for name, price, color, cat, style, url, img in [
+    ("Rib-Knit Mini Shorts Red",24.99,"red","Shorts","casual","https://www2.hm.com/en_ca/productpage.1340105002.html","https://image.hm.com/assets/hm/01/be/01bec43a886f52f7e9e9dda671648e2178b978d0.jpg?imwidth=1536"),
+    ("Rib-Knit Mini Shorts Yellow",24.99,"yellow","Shorts","casual","https://www2.hm.com/en_ca/productpage.1340105001.html","https://image.hm.com/assets/hm/61/47/614782918de031a7c39ba61f5fa3877b6fec4132.jpg?imwidth=1536"),
+    ("Oversized Nylon Anorak",34.99,"red","Jacket","sporty","https://www2.hm.com/en_ca/productpage.1340637001.html","https://image.hm.com/assets/hm/b5/a0/b5a064ee07661dd34e54371507d79a94aa8639a5.jpg?imwidth=1536"),
+    ("Flounce-Trimmed Lace Blouse",24.99,"beige","Shirt","casual","https://www2.hm.com/en_ca/productpage.1341100001.html","https://image.hm.com/assets/hm/c2/63/c26335b7dd2e6537219411aab3692d0f11aa0efd.jpg?imwidth=1536"),
+    ("Split Suede Loafers",24.99,"brown","Flats","casual","https://www2.hm.com/en_ca/productpage.1323549002.html","https://image.hm.com/assets/hm/76/fd/76fdfb133947267d0c225e72564f07444487c83a.jpg?imwidth=1536"),
+]:
+    products.append({"name":name,"brand":"H&M","cat":cat,"color":color,"style":style,"price":str(price),"image_url":img,"url":url})
 
 # ── Generate SQL ──
 lines = [
