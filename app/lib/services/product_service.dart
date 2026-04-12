@@ -86,8 +86,8 @@ class ProductService {
     return data.map((row) => Product.fromMap(row)).toList();
   }
 
-  /// Find similar products using metadata matching.
-  /// Scores: category 0.40 + color 0.35 + style 0.25, sorted descending.
+  /// Find similar products using image embedding similarity (pgvector).
+  /// Falls back to metadata matching if the source product has no embedding.
   Future<List<Product>> findSimilar({
     required String category,
     required String color,
@@ -98,7 +98,68 @@ class ProductService {
     String? brandFilter,
     int limit = 20,
   }) async {
-    // Fetch candidates: same category OR same color (broader pool)
+    // Try embedding-based search first if we have a product ID
+    if (excludeId != null) {
+      try {
+        final results = await _findSimilarByEmbedding(
+          productId: excludeId,
+          minPrice: minPrice,
+          maxPrice: maxPrice,
+          brandFilter: brandFilter,
+          limit: limit,
+        );
+        if (results.isNotEmpty) {
+          debugPrint('[Product] Embedding search: ${results.length} similar to $color $category');
+          return results;
+        }
+      } catch (e) {
+        debugPrint('[Product] Embedding search failed, falling back to metadata: $e');
+      }
+    }
+
+    // Fallback: metadata-based matching
+    return _findSimilarByMetadata(
+      category: category,
+      color: color,
+      style: style,
+      excludeId: excludeId,
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+      brandFilter: brandFilter,
+      limit: limit,
+    );
+  }
+
+  Future<List<Product>> _findSimilarByEmbedding({
+    required String productId,
+    int? minPrice,
+    int? maxPrice,
+    String? brandFilter,
+    int limit = 20,
+  }) async {
+    final params = <String, dynamic>{
+      'source_product_id': productId,
+      'match_threshold': 0.5,
+      'match_count': limit,
+    };
+    if (brandFilter != null) params['filter_brand'] = brandFilter;
+    if (minPrice != null) params['filter_min_price'] = minPrice;
+    if (maxPrice != null) params['filter_max_price'] = maxPrice;
+
+    final data = await _client.rpc('match_products_by_id', params: params);
+    return (data as List).map((row) => Product.fromMap(row)).toList();
+  }
+
+  Future<List<Product>> _findSimilarByMetadata({
+    required String category,
+    required String color,
+    required String style,
+    String? excludeId,
+    int? minPrice,
+    int? maxPrice,
+    String? brandFilter,
+    int limit = 20,
+  }) async {
     var query = _client
         .from('products')
         .select()
@@ -111,23 +172,21 @@ class ProductService {
     final data = await query.limit(100);
     var products = data.map((row) => Product.fromMap(row)).toList();
 
-    // Exclude source product
     if (excludeId != null) {
       products = products.where((p) => p.id != excludeId).toList();
     }
 
-    // Score and sort
     products.sort((a, b) {
-      final sa = _similarityScore(a, category, color, style);
-      final sb = _similarityScore(b, category, color, style);
+      final sa = _metadataScore(a, category, color, style);
+      final sb = _metadataScore(b, category, color, style);
       return sb.compareTo(sa);
     });
 
-    debugPrint('[Product] Found ${products.length} similar to $color $category');
+    debugPrint('[Product] Metadata search: ${products.length} similar to $color $category');
     return products.take(limit).toList();
   }
 
-  double _similarityScore(Product p, String category, String color, String style) {
+  double _metadataScore(Product p, String category, String color, String style) {
     double score = 0;
     if (p.category == category) score += 0.40;
     if (p.color == color) score += 0.35;

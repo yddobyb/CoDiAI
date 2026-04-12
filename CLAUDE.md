@@ -21,10 +21,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Stage 2 (상업화)** 진행 중. Stage 1 MVP는 `assignment` 브랜치에 보존.
 
-- 2-1: 리팩토링 + 인프라 (Riverpod, GoRouter, Supabase)
-- 2-2: 사용자 기능 + 옷장 (Auth, Closet, History)
-- 2-3: ML 고도화 (카테고리 확장, 속성 인식, 이미지 임베딩)
-- 2-4: 쇼핑 통합 + 수익화 (유사 상품 검색, 제휴 링크)
+- 2-1: 리팩토링 + 인프라 (Riverpod, GoRouter, Supabase) ✅
+- 2-2: 사용자 기능 + 옷장 (Auth, Closet, History) ✅
+- 2-3: ML 고도화 (카테고리 확장, 속성 인식, 이미지 임베딩) ✅
+- 2-4: 쇼핑 통합 + 수익화 (유사 상품 검색, 제휴 링크) ✅
+- 2-5: 온디바이스 AI (Gemma 4 E2B — 오프라인 스타일 팁 + 자연어 검색) ← 진행 중
 
 ## Tech Stack
 
@@ -32,12 +33,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 |------|------|
 | ML 학습 | Python 3.13 + TensorFlow/Keras + MobileNetV2 (Transfer Learning) |
 | 모델 배포 | TFLite (온디바이스, float16, 4.6MB) |
-| 앱 | Flutter 3.35 + Dart |
+| 앱 | Flutter 3.41 + Dart 3.11 |
 | 상태관리 | Riverpod |
 | 라우팅 | GoRouter |
 | 백엔드 | Supabase (Auth, PostgreSQL, Storage, Edge Functions) |
+| 이미지 임베딩 | OpenAI CLIP ViT-B/32 (OpenCLIP, 512D) |
 | 벡터 검색 | Supabase pgvector |
-| LLM | Gemini API (HTTP REST, gemini-2.5-flash) |
+| LLM (클라우드) | Gemini API (HTTP REST, gemini-2.5-flash) |
+| LLM (온디바이스) | Gemma 4 E2B (flutter_gemma, 선택적 다운로드) |
 | CI/CD | GitHub Actions |
 
 ## Project Structure
@@ -45,7 +48,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```
 codi/
 ├── model/                          # Python ML 파이프라인
-│   ├── notebooks/                  # Jupyter 학습 노트북 (01-05)
+│   ├── notebooks/                  # Jupyter 학습 노트북 (01-06)
 │   ├── data/                       # 데이터셋 (git 미추적)
 │   ├── saved_model/                # 학습된 모델 (git 미추적)
 │   ├── tflite/                     # 변환된 모델 (git 미추적)
@@ -75,7 +78,7 @@ codi/
 ```bash
 source model/venv/bin/activate
 jupyter notebook model/notebooks/
-# 패키지: tensorflow, keras, numpy, pandas, matplotlib, pillow, jupyter, kagglehub
+# 패키지: tensorflow, keras, numpy, pandas, matplotlib, pillow, jupyter, kagglehub, open-clip-torch, supabase, scikit-learn
 ```
 
 ### Flutter App (app/)
@@ -89,6 +92,7 @@ cd app && flutter build apk
 
 ## ML Model
 
+### 분류 모델 (온디바이스)
 - **아키텍처**: MobileNetV2 + Multi-Task Heads (GAP → Dense(256) → Category/Color/Season heads)
 - **카테고리**: 15개 (Boots, Coat, Dress, Flats, Heels, Hoodie, Jacket, Jeans, Pants, Shirt, Shorts, Skirt, Sneakers, Sweater, T-shirt)
 - **색상**: ML 11색 (beige, black, blue, brown, gray, green, navy, pink, red, white, yellow) + 픽셀 감지 12색 (purple 포함)
@@ -96,6 +100,16 @@ cd app && flutter build apk
 - **스타일**: casual, formal, sporty
 - **성능**: Category 89.73%, Color 71.69%, Season 72.88%, TFLite 5.0MB
 - **알려진 한계**: Flats↔Heels 혼동, navy→black 혼동, 소수 클래스(Hoodie/Jacket) 정확도 낮음
+
+### 이미지 임베딩 모델 (서버사이드)
+- **모델**: OpenAI CLIP ViT-B/32 (OpenCLIP)
+- **출력**: 512D 벡터 (L2 정규화)
+- **용도**: 유사 상품 검색 (pgvector 코사인 유사도)
+- **상품 DB**: 358개 중 356개 임베딩 생성 완료
+- **품질**: 카테고리 내 유사도 0.78 > 전체 평균 0.74
+- **RPC 함수**: `match_products(query_embedding, match_threshold, match_count, filter_category)`
+- **노트북**: `model/notebooks/06_image_embedding.ipynb`
+- **백업**: `model/saved_model/product_embeddings.npz`
 
 ## Supabase DB Schema
 
@@ -115,8 +129,8 @@ daily_usage (id, user_id, usage_date, analysis_count, UNIQUE(user_id, usage_date
 3. 색상 추출 (픽셀 기반 primary + ML fallback) + 스타일 태그
 4. 개인화 프로파일 빌드 (옷장 빈도 + 피드백 학습 + 프로필 선호도)
 5. 추천 엔진이 코디 조합 3개 생성 (카테고리 40% + 색상 35% + 스타일 25% + 개인화 ±14%)
-6. Gemini API가 AI Style Tip 생성
-7. (Stage 2-4) 유사 상품 검색 (이미지 임베딩 + pgvector)
+6. AI Style Tip 생성 (Gemini API 또는 Gemma 4 E2B 온디바이스)
+7. 유사 상품 검색 (CLIP 이미지 임베딩 + pgvector `match_products` RPC)
 8. 결과 화면에서 추천 코디 + 유사 상품 + 구매 링크 표시
 
 ## Recommendation Logic

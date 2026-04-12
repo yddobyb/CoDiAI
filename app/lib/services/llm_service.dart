@@ -3,11 +3,80 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../core/config/api_keys.dart' as config;
 import '../models/outfit_recommendation.dart';
+import 'gemma_service.dart';
 
 class LlmService {
+  final GemmaService? _gemma;
+
+  LlmService({GemmaService? gemmaService}) : _gemma = gemmaService;
+
   static const _baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
 
-  bool get isAvailable => config.geminiApiKey.isNotEmpty;
+  bool get isAvailable => config.geminiApiKey.isNotEmpty || (_gemma?.isModelLoaded ?? false);
+  bool get isGemmaReady => _gemma?.isModelLoaded ?? false;
+
+  /// Build the style tip prompt from a recommendation.
+  String _buildPrompt(OutfitRecommendation rec) {
+    final userItem = rec.userItem;
+    final items = rec.recommendedItems;
+    final itemsDesc = items.map((i) => '${i.color} ${i.category}').join(' + ');
+
+    return '''You are a fashion stylist. A user has a ${userItem.color} ${userItem.category} (${userItem.style} style).
+The recommended outfit combination is: ${userItem.color} ${userItem.category} + $itemsDesc.
+Match score: ${rec.matchPercent}%.
+Color harmony: ${rec.colorHarmony}.
+Style: ${rec.styleConsistency}.
+
+Write a 2-3 sentence styling tip. Include when/where to wear this outfit, one specific styling tip, and the overall vibe. Keep it concise and practical. Do not use emojis.''';
+  }
+
+  /// Generate styling description — tries Gemma on-device first, then Gemini API.
+  Future<String?> generateDescription(OutfitRecommendation rec) async {
+    if (!isAvailable) return null;
+
+    final prompt = _buildPrompt(rec);
+
+    // Try Gemma on-device first
+    if (isGemmaReady) {
+      try {
+        debugPrint('[LLM] Trying Gemma on-device...');
+        final stopwatch = Stopwatch()..start();
+        final result = await _gemma!.generate(prompt);
+        stopwatch.stop();
+        if (result != null && result.isNotEmpty) {
+          debugPrint('[LLM] Gemma success in ${stopwatch.elapsedMilliseconds}ms');
+          return result;
+        }
+      } catch (e) {
+        debugPrint('[LLM] Gemma error, falling back to API: $e');
+      }
+    }
+
+    // Fallback to Gemini API
+    if (config.geminiApiKey.isNotEmpty) {
+      return _callGeminiWithFallback(prompt);
+    }
+
+    return null;
+  }
+
+  Future<String?> _callGeminiWithFallback(String prompt) async {
+    final stopwatch = Stopwatch()..start();
+    for (final model in ['gemini-2.5-flash', 'gemini-2.0-flash-lite', 'gemini-flash-latest']) {
+      try {
+        debugPrint('[LLM] Trying $model...');
+        final result = await _callGemini(prompt, model);
+        if (result != null && result.isNotEmpty) {
+          stopwatch.stop();
+          debugPrint('[LLM] Success with $model in ${stopwatch.elapsedMilliseconds}ms');
+          return result;
+        }
+      } catch (e) {
+        debugPrint('[LLM] $model error: $e');
+      }
+    }
+    return null;
+  }
 
   Future<String?> _callGemini(String prompt, String model) async {
     final url = Uri.parse('$_baseUrl/$model:generateContent?key=${config.geminiApiKey}');
@@ -55,46 +124,52 @@ class LlmService {
     }
   }
 
-  /// Generate styling description for an outfit recommendation.
-  Future<String?> generateDescription(OutfitRecommendation rec) async {
-    if (!isAvailable) return null;
-
-    final userItem = rec.userItem;
-    final items = rec.recommendedItems;
-    final itemsDesc = items.map((i) => '${i.color} ${i.category}').join(' + ');
-
-    final prompt = '''You are a fashion stylist. A user has a ${userItem.color} ${userItem.category} (${userItem.style} style).
-The recommended outfit combination is: ${userItem.color} ${userItem.category} + $itemsDesc.
-Match score: ${rec.matchPercent}%.
-Color harmony: ${rec.colorHarmony}.
-Style: ${rec.styleConsistency}.
-
-Write a 2-3 sentence styling tip. Include when/where to wear this outfit, one specific styling tip, and the overall vibe. Keep it concise and practical. Do not use emojis.''';
-
-    // Try models in order
-    final stopwatch = Stopwatch()..start();
-    for (final model in ['gemini-2.5-flash', 'gemini-2.0-flash-lite', 'gemini-flash-latest']) {
-      try {
-        debugPrint('[LLM] Trying $model...');
-        final result = await _callGemini(prompt, model);
-        if (result != null && result.isNotEmpty) {
-          stopwatch.stop();
-          debugPrint('[LLM] Success with $model in ${stopwatch.elapsedMilliseconds}ms');
-          return result;
-        }
-      } catch (e) {
-        debugPrint('[LLM] $model error: $e');
-      }
-    }
-    return null;
-  }
-
   /// Generate descriptions for multiple recommendations in parallel.
   Future<void> generateAll(List<OutfitRecommendation> recs) async {
     if (!isAvailable) return;
-    final results = await Future.wait(recs.map((r) => generateDescription(r)));
-    for (var i = 0; i < recs.length; i++) {
-      recs[i].llmDescription = results[i];
+    // On-device Gemma: sequential to avoid memory pressure
+    // Cloud Gemini: parallel
+    if (isGemmaReady) {
+      for (var i = 0; i < recs.length; i++) {
+        recs[i].llmDescription = await generateDescription(recs[i]);
+      }
+    } else {
+      final results = await Future.wait(recs.map((r) => generateDescription(r)));
+      for (var i = 0; i < recs.length; i++) {
+        recs[i].llmDescription = results[i];
+      }
+    }
+  }
+
+  /// Parse a natural language query into structured product filters using Gemma.
+  /// Returns null if Gemma is not available or parsing fails.
+  Future<Map<String, String>?> parseSearchQuery(String query) async {
+    if (!isGemmaReady) return null;
+
+    final prompt = '''Parse this fashion search query into structured filters.
+Available categories: T-shirt, Shirt, Hoodie, Sweater, Jacket, Coat, Pants, Jeans, Shorts, Skirt, Dress, Sneakers, Boots, Flats, Heels
+Available colors: black, white, gray, beige, navy, brown, blue, red, green, pink, yellow, purple
+Available styles: casual, formal, sporty
+Available seasons: spring, summer, fall, winter
+
+Query: "$query"
+
+Respond ONLY with a JSON object. Example: {"category":"Boots","color":"black","style":"casual"}
+Only include fields that are clearly mentioned or implied. Do not guess.''';
+
+    try {
+      final result = await _gemma!.generate(prompt);
+      if (result == null) return null;
+
+      // Extract JSON from response
+      final jsonMatch = RegExp(r'\{[^}]+\}').firstMatch(result);
+      if (jsonMatch == null) return null;
+
+      final parsed = jsonDecode(jsonMatch.group(0)!) as Map<String, dynamic>;
+      return parsed.map((k, v) => MapEntry(k, v.toString()));
+    } catch (e) {
+      debugPrint('[LLM] Search query parse error: $e');
+      return null;
     }
   }
 }

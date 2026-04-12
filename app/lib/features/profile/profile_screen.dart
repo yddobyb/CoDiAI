@@ -6,6 +6,7 @@ import '../../core/theme/app_typography.dart';
 import '../../providers/premium_provider.dart';
 import '../../providers/service_providers.dart';
 import '../closet/closet_provider.dart';
+import 'gemma_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -150,6 +151,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
         const SizedBox(height: 24),
 
+        // Offline AI
+        _buildOfflineAiSection(),
+        const SizedBox(height: 24),
+
         // Logout
         OutlinedButton.icon(
           onPressed: () async {
@@ -219,6 +224,141 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             const Icon(Icons.chevron_right, color: AppColors.textTertiary),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildOfflineAiSection() {
+    final gemma = ref.watch(gemmaProvider);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.smart_toy_outlined, size: 20, color: AppColors.accent),
+              const SizedBox(width: 8),
+              Text('Offline AI', style: AppTypography.headingSmall),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'On-device style tips without internet (~3.4 GB)',
+            style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+          ),
+          const SizedBox(height: 12),
+          if (gemma.error != null) ...[
+            Text(
+              gemma.error!,
+              style: AppTypography.bodySmall.copyWith(color: Colors.red),
+            ),
+            const SizedBox(height: 8),
+          ],
+          _buildGemmaControls(gemma),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGemmaControls(GemmaState gemma) {
+    switch (gemma.downloadStatus) {
+      case GemmaDownloadStatus.notDownloaded:
+        return SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () => ref.read(gemmaProvider.notifier).downloadAndEnable(),
+            icon: const Icon(Icons.download, size: 18),
+            label: const Text('Download Model'),
+          ),
+        );
+
+      case GemmaDownloadStatus.downloading:
+        final pct = (gemma.downloadProgress * 100).toInt();
+        return Column(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: LinearProgressIndicator(
+                value: gemma.downloadProgress,
+                minHeight: 8,
+                backgroundColor: AppColors.surface,
+                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accent),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Downloading... $pct%',
+              style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+            ),
+          ],
+        );
+
+      case GemmaDownloadStatus.installed:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  gemma.isEnabled ? Icons.check_circle : Icons.circle_outlined,
+                  size: 18,
+                  color: gemma.isEnabled ? AppColors.accent : AppColors.textTertiary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  gemma.isEnabled ? 'Enabled' : 'Disabled',
+                  style: AppTypography.bodyMedium,
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Switch(
+                  value: gemma.isEnabled,
+                  activeTrackColor: AppColors.accent,
+                  onChanged: (on) {
+                    if (on) {
+                      ref.read(gemmaProvider.notifier).loadModel();
+                    } else {
+                      ref.read(gemmaProvider.notifier).disable();
+                    }
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, size: 20),
+                  color: AppColors.textTertiary,
+                  onPressed: () => _confirmDeleteModel(),
+                  tooltip: 'Delete model',
+                ),
+              ],
+            ),
+          ],
+        );
+    }
+  }
+
+  void _confirmDeleteModel() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete AI Model?'),
+        content: const Text('This will remove the downloaded model (~3.4 GB). You can re-download it later.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              ref.read(gemmaProvider.notifier).deleteModel();
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
       ),
     );
   }

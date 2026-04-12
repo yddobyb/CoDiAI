@@ -9,6 +9,7 @@ class Product {
   final String imageUrl;
   final String? affiliateUrl;
   final DateTime createdAt;
+  final double? similarity;
 
   const Product({
     required this.id,
@@ -21,6 +22,7 @@ class Product {
     required this.imageUrl,
     this.affiliateUrl,
     required this.createdAt,
+    this.similarity,
   });
 
   factory Product.fromMap(Map<String, dynamic> map) {
@@ -35,6 +37,7 @@ class Product {
       imageUrl: map['image_url'] as String,
       affiliateUrl: map['affiliate_url'] as String?,
       createdAt: DateTime.parse(map['created_at'] as String),
+      similarity: (map['similarity'] as num?)?.toDouble(),
     );
   }
 
