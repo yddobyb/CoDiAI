@@ -18,10 +18,6 @@ class AppShell extends StatelessWidget {
         child: NavigationBar(
           selectedIndex: navigationShell.currentIndex,
           onDestinationSelected: (i) => navigationShell.goBranch(i, initialLocation: i == navigationShell.currentIndex),
-          backgroundColor: AppColors.surface,
-          indicatorColor: AppColors.accent.withAlpha(25),
-          height: 64,
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
           destinations: const [
             NavigationDestination(
               icon: Icon(Icons.auto_awesome_outlined),

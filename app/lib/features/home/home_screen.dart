@@ -82,7 +82,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
               SizedBox(height: MediaQuery.of(context).size.height * 0.06),
@@ -132,7 +132,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                 decoration: BoxDecoration(
                   color: AppColors.surfaceVariant,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
                   children: [
@@ -178,12 +178,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       height: 80,
       decoration: BoxDecoration(
         color: AppColors.surfaceVariant,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: const Center(
         child: SizedBox(
           width: 16, height: 16,
-          child: CircularProgressIndicator(strokeWidth: 1.5, color: AppColors.accent),
+          child: CircularProgressIndicator(strokeWidth: 1.5, color: AppColors.textTertiary),
         ),
       ),
     );

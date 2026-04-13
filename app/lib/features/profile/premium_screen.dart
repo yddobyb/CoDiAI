@@ -32,7 +32,7 @@ class PremiumScreen extends ConsumerWidget {
                 ),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: const Icon(Icons.auto_awesome, color: Colors.white, size: 28),
+              child: const Icon(Icons.auto_awesome, color: AppColors.textInverse, size: 28),
             ),
           ),
           const SizedBox(height: 20),
@@ -94,7 +94,7 @@ class PremiumScreen extends ConsumerWidget {
             style: ElevatedButton.styleFrom(
               minimumSize: const Size(double.infinity, 52),
               backgroundColor: AppColors.accent,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.textInverse,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
             child: const Text('Start Free Trial'),

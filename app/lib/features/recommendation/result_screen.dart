@@ -41,12 +41,12 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
       body: state.isLoading
           ? const Center(
               child: CircularProgressIndicator(
-                strokeWidth: 2.5,
+                strokeWidth: 2,
                 color: AppColors.primary,
               ),
             )
           : ListView(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
               children: [
                 // ── Your Item Summary ──
                 _buildUserItemCard(),
@@ -186,7 +186,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surfaceVariant,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
@@ -206,8 +206,8 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
             ),
           ),
           Container(
-            width: 20,
-            height: 20,
+            width: 12,
+            height: 12,
             decoration: BoxDecoration(
               color: color,
               shape: BoxShape.circle,

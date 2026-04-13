@@ -121,7 +121,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
             color: AppColors.surfaceVariant,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -178,18 +178,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           gradient: const LinearGradient(
             colors: [AppColors.accent, Color(0xFFD4A574)],
           ),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
           children: [
-            const Icon(Icons.auto_awesome, color: Colors.white),
+            const Icon(Icons.auto_awesome, color: AppColors.textInverse),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Premium', style: AppTypography.headingSmall.copyWith(color: Colors.white)),
-                  Text('Unlimited access', style: AppTypography.bodySmall.copyWith(color: Colors.white70)),
+                  Text('Premium', style: AppTypography.headingSmall.copyWith(color: AppColors.textInverse)),
+                  Text('Unlimited access', style: AppTypography.bodySmall.copyWith(color: AppColors.textInverse.withAlpha(180))),
                 ],
               ),
             ),
@@ -204,7 +204,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColors.surfaceVariant,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.accent.withAlpha(80)),
         ),
         child: Row(
@@ -231,11 +231,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget _buildOfflineAiSection() {
     final gemma = ref.watch(gemmaProvider);
 
+    // Show confirmation dialog when download is blocked
+    ref.listen<GemmaState>(gemmaProvider, (prev, next) {
+      if (prev?.downloadBlock == next.downloadBlock) return;
+      if (next.downloadBlock == DownloadBlock.cellular) {
+        _showDownloadWarning(
+          title: 'No Wi-Fi Detected',
+          message: 'This will download ~3.4 GB using mobile data. Continue?',
+        );
+      } else if (next.downloadBlock == DownloadBlock.lowStorage) {
+        _showDownloadWarning(
+          title: 'Low Storage',
+          message: 'At least 4 GB of free space is recommended. Continue anyway?',
+        );
+      }
+    });
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surfaceVariant,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,7 +272,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           if (gemma.error != null) ...[
             Text(
               gemma.error!,
-              style: AppTypography.bodySmall.copyWith(color: Colors.red),
+              style: AppTypography.bodySmall.copyWith(color: AppColors.error),
             ),
             const SizedBox(height: 8),
           ],
@@ -343,6 +359,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
+  void _showDownloadWarning({required String title, required String message}) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              ref.read(gemmaProvider.notifier).downloadAndEnable(force: true);
+            },
+            child: const Text('Download Anyway'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _confirmDeleteModel() {
     showDialog(
       context: context,
@@ -356,7 +392,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Navigator.pop(ctx);
               ref.read(gemmaProvider.notifier).deleteModel();
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text('Delete', style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),

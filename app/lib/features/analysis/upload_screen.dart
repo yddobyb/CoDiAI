@@ -130,7 +130,7 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
             width: 32,
             height: 32,
             child: CircularProgressIndicator(
-              strokeWidth: 2.5,
+              strokeWidth: 2,
               color: AppColors.primary,
             ),
           ),
@@ -146,7 +146,7 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.errorLight,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         children: [

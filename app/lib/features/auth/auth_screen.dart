@@ -113,7 +113,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         child: Form(
           key: _formKey,
           child: Column(
@@ -153,7 +153,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   child: Center(
                     child: SizedBox(
                       width: 20, height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accent),
+                      child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
                     ),
                   ),
                 ),
@@ -207,7 +207,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: AppColors.accent.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     children: [
@@ -231,7 +231,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: AppColors.errorLight,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     _error!,

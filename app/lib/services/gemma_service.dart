@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
 
-/// Manages Gemma 4 E2B model lifecycle: download, load, and inference.
 class GemmaService {
   static const _modelUrl =
       'https://huggingface.co/nicoboss/gemma-4-E2B-it-GGUF/resolve/main/gemma-4-E2B-it-Q4_K_M.gguf';
@@ -13,21 +12,17 @@ class GemmaService {
 
   bool get isModelLoaded => _isModelLoaded;
 
-  /// Check if the model file is already downloaded.
   Future<bool> isModelInstalled() async {
     try {
       return await FlutterGemma.isModelInstalled(_modelId);
     } catch (e) {
-      debugPrint('[Gemma] isModelInstalled check failed: $e');
+      debugPrint('[Gemma] isModelInstalled error: $e');
       return false;
     }
   }
 
-  /// Download the model. Yields progress (0.0 – 1.0).
   Stream<double> downloadModel() {
-    debugPrint('[Gemma] Starting model download...');
     final controller = StreamController<double>();
-
     FlutterGemma.installModel(
       modelType: ModelType.gemmaIt,
       fileType: ModelFileType.binary,
@@ -38,7 +33,7 @@ class GemmaService {
         })
         .install()
         .then((_) {
-          debugPrint('[Gemma] Model download complete');
+          debugPrint('[Gemma] Download complete');
           controller.close();
         })
         .catchError((Object e) {
@@ -46,67 +41,38 @@ class GemmaService {
           controller.addError(e);
           controller.close();
         });
-
     return controller.stream;
   }
 
-  /// Load the model into memory for inference.
   Future<void> loadModel() async {
     if (_isModelLoaded) return;
-    try {
-      debugPrint('[Gemma] Loading model...');
-      _model = await FlutterGemma.getActiveModel(maxTokens: 512);
-      _isModelLoaded = true;
-      debugPrint('[Gemma] Model loaded');
-    } catch (e) {
-      debugPrint('[Gemma] Load error: $e');
-      _isModelLoaded = false;
-      rethrow;
-    }
+    _model = await FlutterGemma.getActiveModel(maxTokens: 512);
+    _isModelLoaded = true;
+    debugPrint('[Gemma] Model loaded');
   }
 
-  /// Generate a text response from the model.
   Future<String?> generate(String prompt) async {
-    if (!_isModelLoaded || _model == null) {
-      debugPrint('[Gemma] Model not loaded');
-      return null;
+    if (!_isModelLoaded || _model == null) return null;
+    final chat = await _model!.createChat();
+    await chat.addQueryChunk(Message.text(text: prompt, isUser: true));
+    final response = await chat.generateChatResponse();
+    if (response is TextResponse) {
+      final text = response.token.trim();
+      return text.isEmpty ? null : text;
     }
-
-    try {
-      final chat = await _model!.createChat();
-      await chat.addQueryChunk(Message.text(text: prompt, isUser: true));
-      final response = await chat.generateChatResponse();
-      if (response is TextResponse) {
-        final text = response.token.trim();
-        debugPrint('[Gemma] Generated ${text.length} chars');
-        return text.isEmpty ? null : text;
-      }
-      debugPrint('[Gemma] Unexpected response type: ${response.runtimeType}');
-      return null;
-    } catch (e) {
-      debugPrint('[Gemma] Generate error: $e');
-      return null;
-    }
+    return null;
   }
 
-  /// Unload the model from memory.
   Future<void> unloadModel() async {
-    try {
-      await _model?.close();
-    } catch (_) {}
+    await _model?.close();
     _model = null;
     _isModelLoaded = false;
     debugPrint('[Gemma] Model unloaded');
   }
 
-  /// Delete the downloaded model file.
   Future<void> deleteModel() async {
     await unloadModel();
-    try {
-      await FlutterGemma.uninstallModel(_modelId);
-      debugPrint('[Gemma] Model deleted');
-    } catch (e) {
-      debugPrint('[Gemma] Delete error: $e');
-    }
+    await FlutterGemma.uninstallModel(_modelId);
+    debugPrint('[Gemma] Model deleted');
   }
 }

@@ -103,21 +103,27 @@ abstract final class AppTheme {
         space: 1,
       ),
 
-      // ── Bottom Navigation ──
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      // ── Navigation Bar (Material 3) ──
+      navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.surface,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.textTertiary,
-        type: BottomNavigationBarType.fixed,
+        indicatorColor: AppColors.accent.withAlpha(25),
         elevation: 0,
-        selectedLabelStyle: GoogleFonts.dmSans(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-        ),
-        unselectedLabelStyle: GoogleFonts.dmSans(
-          fontSize: 11,
-          fontWeight: FontWeight.w400,
-        ),
+        height: 64,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return GoogleFonts.dmSans(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: AppColors.primary,
+            );
+          }
+          return GoogleFonts.dmSans(
+            fontSize: 11,
+            fontWeight: FontWeight.w400,
+            color: AppColors.textTertiary,
+          );
+        }),
       ),
 
       // ── Input Decoration ──

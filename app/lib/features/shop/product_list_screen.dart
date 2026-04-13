@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
-import '../../models/product.dart';
+import '../../widgets/product_grid_card.dart';
 import 'similar_provider.dart';
 
 /// Displays similar product search results with filters and sorting.
@@ -81,7 +81,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: AppColors.surfaceVariant,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
@@ -223,7 +223,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
         mainAxisSpacing: 12,
       ),
       itemCount: state.products.length,
-      itemBuilder: (context, index) => _ProductGridCard(product: state.products[index]),
+      itemBuilder: (context, index) => ProductGridCard(product: state.products[index]),
     );
   }
 
@@ -417,87 +417,3 @@ class _FilterButton extends StatelessWidget {
   }
 }
 
-class _ProductGridCard extends StatelessWidget {
-  final Product product;
-
-  const _ProductGridCard({required this.product});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => context.push('/product', extra: product),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.surfaceMuted,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.borderLight),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  product.imageUrl,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  errorBuilder: (_, _, _) => Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.image_outlined, size: 28, color: AppColors.textTertiary),
-                        const SizedBox(height: 4),
-                        Text(product.category, style: AppTypography.labelSmall),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          // Brand
-          Text(
-            product.brand.toUpperCase(),
-            style: AppTypography.labelSmall.copyWith(
-              letterSpacing: 0.8,
-              color: AppColors.textTertiary,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 2),
-          // Name
-          Text(
-            product.name,
-            style: AppTypography.bodySmall,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 2),
-          // Price + Color dot
-          Row(
-            children: [
-              Text(
-                product.formattedPrice,
-                style: AppTypography.labelMedium.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const Spacer(),
-              Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: AppColors.clothingColor(product.color),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.border, width: 0.5),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}

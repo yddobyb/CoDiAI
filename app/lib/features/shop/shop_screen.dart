@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../models/product.dart';
+import '../../widgets/product_grid_card.dart';
+import '../profile/gemma_provider.dart';
 import 'shop_provider.dart';
 
 class ShopScreen extends ConsumerStatefulWidget {
@@ -59,7 +60,8 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
         children: [
           _buildSearchBar(),
           _buildSlotFilters(),
-          if (state.categoryFilter != null) _buildActiveFilters(state),
+          if (state.categoryFilter != null || state.colorFilter != null || state.styleFilter != null)
+            _buildActiveFilters(state),
           Expanded(child: _buildBody(state)),
         ],
       ),
@@ -67,15 +69,21 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   }
 
   Widget _buildSearchBar() {
+    final isGemmaReady = ref.watch(gemmaProvider).isEnabled;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
       child: TextField(
         controller: _searchController,
         style: AppTypography.bodyLarge,
         decoration: InputDecoration(
-          hintText: 'Search brands, items...',
+          hintText: isGemmaReady
+              ? 'Try "black leather boots" or search brands...'
+              : 'Search brands, items...',
           hintStyle: AppTypography.bodyMedium,
-          prefixIcon: const Icon(Icons.search, size: 20, color: AppColors.textTertiary),
+          prefixIcon: isGemmaReady
+              ? const Icon(Icons.auto_awesome, size: 20, color: AppColors.accent)
+              : const Icon(Icons.search, size: 20, color: AppColors.textTertiary),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
                   icon: const Icon(Icons.close, size: 18),
@@ -93,7 +101,9 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.border),
+            borderSide: BorderSide(
+              color: isGemmaReady ? AppColors.accent.withAlpha(80) : AppColors.border,
+            ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -169,6 +179,24 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
         children: [
+          if (state.isAiSearch) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: AppColors.accent.withAlpha(30),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.auto_awesome, size: 12, color: AppColors.accent),
+                  const SizedBox(width: 4),
+                  Text('AI', style: AppTypography.labelSmall.copyWith(color: AppColors.accent)),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
           if (state.categoryFilter != null)
             _filterChip(state.categoryFilter!, () {
               ref.read(shopProvider.notifier).setCategory(null);
@@ -177,6 +205,12 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
             const SizedBox(width: 8),
             _filterChip(state.colorFilter!, () {
               ref.read(shopProvider.notifier).setColor(null);
+            }),
+          ],
+          if (state.styleFilter != null) ...[
+            const SizedBox(width: 8),
+            _filterChip(state.styleFilter!, () {
+              ref.read(shopProvider.notifier).setStyle(null);
             }),
           ],
         ],
@@ -207,7 +241,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
 
   Widget _buildBody(ShopState state) {
     if (state.isLoading && state.products.isEmpty) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.accent));
+      return const Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary));
     }
 
     if (state.error != null && state.products.isEmpty) {
@@ -233,13 +267,13 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.shopping_bag_outlined, size: 64, color: AppColors.textTertiary),
-            const SizedBox(height: 16),
-            Text('No products found', style: AppTypography.headingMedium),
-            const SizedBox(height: 8),
+            const Icon(Icons.shopping_bag_outlined, size: 48, color: AppColors.textTertiary),
+            const SizedBox(height: 12),
+            Text('No products found', style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondary)),
+            const SizedBox(height: 4),
             Text(
               'Try adjusting your filters',
-              style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondary),
+              style: AppTypography.bodySmall.copyWith(color: AppColors.textTertiary),
             ),
           ],
         ),
@@ -250,7 +284,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     final filtered = _filterBySlot(state.products);
 
     return RefreshIndicator(
-      color: AppColors.accent,
+      color: AppColors.primary,
       onRefresh: () => ref.read(shopProvider.notifier).loadProducts(refresh: true),
       child: GridView.builder(
         controller: _scrollController,
@@ -267,11 +301,11 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
             return const Center(
               child: Padding(
                 padding: EdgeInsets.all(16),
-                child: CircularProgressIndicator(color: AppColors.accent, strokeWidth: 2),
+                child: CircularProgressIndicator(color: AppColors.primary, strokeWidth: 2),
               ),
             );
           }
-          return _ProductCard(product: filtered[index]);
+          return ProductGridCard(product: filtered[index]);
         },
       ),
     );
@@ -285,76 +319,3 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   }
 }
 
-class _ProductCard extends ConsumerWidget {
-  final Product product;
-
-  const _ProductCard({required this.product});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      onTap: () => context.push('/product', extra: product),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.surfaceMuted,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.borderLight),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  product.imageUrl,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  errorBuilder: (_, _, _) => Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.image_outlined, size: 32, color: AppColors.textTertiary),
-                        const SizedBox(height: 4),
-                        Text(product.category, style: AppTypography.labelSmall),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          // Brand
-          Text(
-            product.brand,
-            style: AppTypography.labelSmall.copyWith(
-              color: AppColors.textTertiary,
-              letterSpacing: 1.0,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 2),
-          // Name
-          Text(
-            product.name,
-            style: AppTypography.bodyMedium.copyWith(
-              color: AppColors.textPrimary,
-              height: 1.3,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 4),
-          // Price
-          Text(
-            product.formattedPrice,
-            style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w700),
-          ),
-        ],
-      ),
-    );
-  }
-}

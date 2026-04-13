@@ -34,7 +34,7 @@ class ProductDetailScreen extends ConsumerWidget {
       pinned: true,
       backgroundColor: AppColors.surface,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
+        icon: const Icon(Icons.arrow_back_ios, size: 20),
         onPressed: () => context.pop(),
       ),
       flexibleSpace: FlexibleSpaceBar(
@@ -61,7 +61,7 @@ class ProductDetailScreen extends ConsumerWidget {
 
   Widget _buildInfo() {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -89,7 +89,7 @@ class ProductDetailScreen extends ConsumerWidget {
 
   Widget _buildTags(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -163,8 +163,8 @@ class ProductDetailScreen extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 14,
-            height: 14,
+            width: 12,
+            height: 12,
             decoration: BoxDecoration(
               color: AppColors.clothingColor(color),
               shape: BoxShape.circle,
@@ -180,7 +180,7 @@ class ProductDetailScreen extends ConsumerWidget {
 
   Widget _buildBottomBar(BuildContext context, WidgetRef ref) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+      padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
       decoration: const BoxDecoration(
         color: AppColors.surface,
         border: Border(top: BorderSide(color: AppColors.borderLight)),

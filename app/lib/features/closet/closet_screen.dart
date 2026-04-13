@@ -94,7 +94,7 @@ class _ClosetScreenState extends ConsumerState<ClosetScreen> {
           height: 44,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             itemCount: _filters.length,
             separatorBuilder: (_, index) => const SizedBox(width: 8),
             itemBuilder: (context, i) {
@@ -102,16 +102,19 @@ class _ClosetScreenState extends ConsumerState<ClosetScreen> {
               return GestureDetector(
                 onTap: () => setState(() => _selectedFilter = _filters[i]),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary : AppColors.surfaceVariant,
+                    color: isSelected ? AppColors.primary : AppColors.surface,
                     borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isSelected ? AppColors.primary : AppColors.border,
+                    ),
                   ),
                   alignment: Alignment.center,
                   child: Text(
                     _filters[i],
-                    style: AppTypography.labelMedium.copyWith(
-                      color: isSelected ? AppColors.textInverse : AppColors.textSecondary,
+                    style: AppTypography.labelLarge.copyWith(
+                      color: isSelected ? AppColors.textInverse : AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -150,7 +153,7 @@ class _ClosetScreenState extends ConsumerState<ClosetScreen> {
     }
 
     return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         crossAxisSpacing: 12,

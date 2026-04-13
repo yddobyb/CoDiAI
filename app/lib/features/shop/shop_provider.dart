@@ -10,8 +10,10 @@ class ShopState {
   final String? error;
   final String? categoryFilter;
   final String? colorFilter;
+  final String? styleFilter;
   final String sortBy;
   final String? searchQuery;
+  final bool isAiSearch;
 
   const ShopState({
     this.products = const [],
@@ -20,8 +22,10 @@ class ShopState {
     this.error,
     this.categoryFilter,
     this.colorFilter,
+    this.styleFilter,
     this.sortBy = 'created_at',
     this.searchQuery,
+    this.isAiSearch = false,
   });
 
   ShopState copyWith({
@@ -31,10 +35,13 @@ class ShopState {
     String? error,
     String? categoryFilter,
     String? colorFilter,
+    String? styleFilter,
     String? sortBy,
     String? searchQuery,
+    bool? isAiSearch,
     bool clearCategory = false,
     bool clearColor = false,
+    bool clearStyle = false,
     bool clearSearch = false,
     bool clearError = false,
   }) {
@@ -45,8 +52,10 @@ class ShopState {
       error: clearError ? null : (error ?? this.error),
       categoryFilter: clearCategory ? null : (categoryFilter ?? this.categoryFilter),
       colorFilter: clearColor ? null : (colorFilter ?? this.colorFilter),
+      styleFilter: clearStyle ? null : (styleFilter ?? this.styleFilter),
       sortBy: sortBy ?? this.sortBy,
       searchQuery: clearSearch ? null : (searchQuery ?? this.searchQuery),
+      isAiSearch: isAiSearch ?? this.isAiSearch,
     );
   }
 }
@@ -78,6 +87,7 @@ class ShopNotifier extends Notifier<ShopState> {
         products = await service.fetchProducts(
           category: state.categoryFilter,
           color: state.colorFilter,
+          style: state.styleFilter,
           sortBy: state.sortBy,
           ascending: state.sortBy == 'price',
           limit: _pageSize,
@@ -115,17 +125,65 @@ class ShopNotifier extends Notifier<ShopState> {
     loadProducts(refresh: true);
   }
 
+  void setStyle(String? style) {
+    state = state.copyWith(
+      styleFilter: style,
+      clearStyle: style == null,
+    );
+    loadProducts(refresh: true);
+  }
+
   void setSort(String sortBy) {
     state = state.copyWith(sortBy: sortBy);
     loadProducts(refresh: true);
   }
 
-  void search(String query) {
+  Future<void> search(String query) async {
+    if (query.isEmpty) {
+      state = state.copyWith(
+        clearSearch: true,
+        clearCategory: true,
+        clearColor: true,
+        clearStyle: true,
+        isAiSearch: false,
+      );
+      loadProducts(refresh: true);
+      return;
+    }
+
+    // Try AI parsing first (Gemma on-device)
+    final llm = ref.read(llmServiceProvider);
+    if (llm.isGemmaReady) {
+      try {
+        debugPrint('[Shop] Trying AI search for: "$query"');
+        final filters = await llm.parseSearchQuery(query);
+        if (filters != null && filters.isNotEmpty) {
+          debugPrint('[Shop] AI parsed filters: $filters');
+          state = state.copyWith(
+            categoryFilter: filters['category'],
+            colorFilter: filters['color'],
+            styleFilter: filters['style'],
+            clearCategory: filters['category'] == null,
+            clearColor: filters['color'] == null,
+            clearStyle: filters['style'] == null,
+            clearSearch: true,
+            isAiSearch: true,
+          );
+          loadProducts(refresh: true);
+          return;
+        }
+      } catch (e) {
+        debugPrint('[Shop] AI search failed, falling back to text: $e');
+      }
+    }
+
+    // Fallback: text search
     state = state.copyWith(
       searchQuery: query,
-      clearSearch: query.isEmpty,
       clearCategory: true,
       clearColor: true,
+      clearStyle: true,
+      isAiSearch: false,
     );
     loadProducts(refresh: true);
   }

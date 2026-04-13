@@ -94,7 +94,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     return RefreshIndicator(
       onRefresh: () => ref.read(historyProvider.notifier).loadHistory(),
       child: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
         itemCount: state.entries.length,
         separatorBuilder: (_, index) => const SizedBox(height: 12),
         itemBuilder: (context, i) => _HistoryCard(
@@ -138,7 +138,7 @@ class _HistoryCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.borderLight),
         ),
         child: Column(
@@ -165,7 +165,7 @@ class _HistoryCard extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  width: 16, height: 16,
+                  width: 12, height: 12,
                   decoration: BoxDecoration(
                     color: color,
                     shape: BoxShape.circle,

@@ -69,8 +69,8 @@ class OutfitCard extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Container(
-                              width: 8,
-                              height: 8,
+                              width: 10,
+                              height: 10,
                               decoration: BoxDecoration(color: color, shape: BoxShape.circle),
                             ),
                             const SizedBox(width: 6),
