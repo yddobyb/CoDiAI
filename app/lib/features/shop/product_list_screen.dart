@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../widgets/product_grid_card.dart';
+import '../../widgets/skeleton_loader.dart';
 import 'similar_provider.dart';
 
 /// Displays similar product search results with filters and sorting.
@@ -178,8 +179,16 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
 
   Widget _buildResults(SimilarState state) {
     if (state.isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
+      return GridView.builder(
+        padding: const EdgeInsets.all(16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.62,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+        ),
+        itemCount: 6,
+        itemBuilder: (_, _) => const SkeletonProductCard(),
       );
     }
 
@@ -190,7 +199,12 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
           children: [
             const Icon(Icons.error_outline, size: 48, color: AppColors.textTertiary),
             const SizedBox(height: 12),
-            Text('Something went wrong', style: AppTypography.bodyMedium),
+            Text(state.error!, style: AppTypography.bodyMedium),
+            const SizedBox(height: 16),
+            OutlinedButton(
+              onPressed: () => ref.read(similarProvider.notifier).clearFilters(),
+              child: const Text('Retry'),
+            ),
           ],
         ),
       );

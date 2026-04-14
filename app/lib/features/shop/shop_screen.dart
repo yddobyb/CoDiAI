@@ -4,6 +4,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../models/product.dart';
 import '../../widgets/product_grid_card.dart';
+import '../../widgets/skeleton_loader.dart';
 import '../profile/gemma_provider.dart';
 import 'shop_provider.dart';
 
@@ -241,7 +242,17 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
 
   Widget _buildBody(ShopState state) {
     if (state.isLoading && state.products.isEmpty) {
-      return const Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary));
+      return GridView.builder(
+        padding: const EdgeInsets.all(16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.62,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 16,
+        ),
+        itemCount: 6,
+        itemBuilder: (_, _) => const SkeletonProductCard(),
+      );
     }
 
     if (state.error != null && state.products.isEmpty) {

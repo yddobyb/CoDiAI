@@ -6,6 +6,8 @@ import '../core/theme/app_typography.dart';
 import '../models/clothing_item.dart';
 import '../models/product.dart';
 import '../providers/service_providers.dart';
+import 'cached_product_image.dart';
+import 'skeleton_loader.dart';
 
 /// Horizontal scrollable row of products matching a recommended clothing item.
 class ProductSuggestionRow extends ConsumerStatefulWidget {
@@ -20,6 +22,7 @@ class ProductSuggestionRow extends ConsumerStatefulWidget {
 class _ProductSuggestionRowState extends ConsumerState<ProductSuggestionRow> {
   List<Product>? _products;
   bool _loading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -28,6 +31,10 @@ class _ProductSuggestionRowState extends ConsumerState<ProductSuggestionRow> {
   }
 
   Future<void> _fetchProducts() async {
+    setState(() {
+      _loading = true;
+      _hasError = false;
+    });
     try {
       final service = ref.read(productServiceProvider);
       final products = await service.fetchMatchingProducts(
@@ -42,20 +49,43 @@ class _ProductSuggestionRowState extends ConsumerState<ProductSuggestionRow> {
         });
       }
     } catch (_) {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) setState(() { _loading = false; _hasError = true; });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const SizedBox(
-        height: 48,
-        child: Center(
-          child: SizedBox(
-            width: 16,
-            height: 16,
-            child: CircularProgressIndicator(strokeWidth: 1.5, color: AppColors.textTertiary),
+      return SizedBox(
+        height: 150,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: 3,
+          separatorBuilder: (_, _) => const SizedBox(width: 10),
+          itemBuilder: (_, _) => const SkeletonMiniProductCard(),
+        ),
+      );
+    }
+
+    if (_hasError) {
+      return GestureDetector(
+        onTap: _fetchProducts,
+        child: Container(
+          height: 60,
+          decoration: BoxDecoration(
+            color: AppColors.surfaceMuted,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.refresh, size: 16, color: AppColors.textTertiary),
+              const SizedBox(width: 8),
+              Text(
+                "Couldn't load suggestions. Tap to retry.",
+                style: AppTypography.labelSmall.copyWith(color: AppColors.textTertiary),
+              ),
+            ],
           ),
         ),
       );
@@ -130,15 +160,9 @@ class _MiniProductCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppColors.borderLight),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    product.imageUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => Center(
-                      child: Text(product.category, style: AppTypography.labelSmall),
-                    ),
-                  ),
+                child: CachedProductImage(
+                  imageUrl: product.imageUrl,
+                  category: product.category,
                 ),
               ),
             ),

@@ -7,6 +7,7 @@ import '../../core/theme/app_typography.dart';
 import '../../models/clothing_item.dart';
 import '../../models/product.dart';
 import '../../providers/service_providers.dart';
+import '../../widgets/cached_product_image.dart';
 
 class ProductDetailScreen extends ConsumerWidget {
   final Product product;
@@ -38,22 +39,10 @@ class ProductDetailScreen extends ConsumerWidget {
         onPressed: () => context.pop(),
       ),
       flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          color: AppColors.surfaceMuted,
-          child: Image.network(
-            product.imageUrl,
-            fit: BoxFit.cover,
-            errorBuilder: (_, _, _) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.image_outlined, size: 64, color: AppColors.textTertiary),
-                  const SizedBox(height: 8),
-                  Text(product.category, style: AppTypography.headingMedium),
-                ],
-              ),
-            ),
-          ),
+        background: CachedProductImage(
+          imageUrl: product.imageUrl,
+          category: product.category,
+          borderRadius: 0,
         ),
       ),
     );

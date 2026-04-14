@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/errors/app_exception.dart';
 import '../../models/product.dart';
 import '../../providers/service_providers.dart';
 
@@ -92,8 +93,10 @@ class SimilarNotifier extends Notifier<SimilarState> {
 
       final sorted = _applySorting(products);
       state = state.copyWith(products: sorted, isLoading: false);
+    } on NetworkException catch (e) {
+      state = state.copyWith(error: e.userMessage, isLoading: false);
     } catch (e) {
-      state = state.copyWith(error: e.toString(), isLoading: false);
+      state = state.copyWith(error: 'Something went wrong', isLoading: false);
     }
   }
 

@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../core/errors/app_exception.dart';
 import '../models/product.dart';
 
 class ProductService {
@@ -17,26 +20,31 @@ class ProductService {
     int limit = 20,
     int offset = 0,
   }) async {
-    var query = _client.from('products').select();
+    try {
+      var query = _client.from('products').select();
 
-    if (category != null) query = query.eq('category', category);
-    if (color != null) query = query.eq('color', color);
-    if (style != null) query = query.eq('style', style);
-    if (minPrice != null) query = query.gte('price', minPrice);
-    if (maxPrice != null) query = query.lte('price', maxPrice);
+      if (category != null) query = query.eq('category', category);
+      if (color != null) query = query.eq('color', color);
+      if (style != null) query = query.eq('style', style);
+      if (minPrice != null) query = query.gte('price', minPrice);
+      if (maxPrice != null) query = query.lte('price', maxPrice);
 
-    final data = await query
-        .order(sortBy, ascending: ascending)
-        .range(offset, offset + limit - 1);
+      final data = await query
+          .order(sortBy, ascending: ascending)
+          .range(offset, offset + limit - 1);
 
-    debugPrint('[Product] Fetched ${data.length} products '
-        '(cat=$category, color=$color, sort=$sortBy)');
+      debugPrint('[Product] Fetched ${data.length} products '
+          '(cat=$category, color=$color, sort=$sortBy)');
 
-    return data.map((row) => Product.fromMap(row)).toList();
+      return data.map((row) => Product.fromMap(row)).toList();
+    } on PostgrestException catch (e) {
+      throw NetworkException(e.message, cause: e, statusCode: 500);
+    } on SocketException catch (_) {
+      throw const NetworkException('No internet connection');
+    }
   }
 
   /// Fetch products matching a specific slot (top/bottom/outer/shoes).
-  /// Useful for finding products that match a recommended clothing item.
   Future<List<Product>> fetchBySlot({
     required String slot,
     String? color,
@@ -52,38 +60,56 @@ class ProductService {
     final categories = slotCategories[slot];
     if (categories == null) return [];
 
-    var query = _client
-        .from('products')
-        .select()
-        .inFilter('category', categories);
+    try {
+      var query = _client
+          .from('products')
+          .select()
+          .inFilter('category', categories);
 
-    if (color != null) query = query.eq('color', color);
+      if (color != null) query = query.eq('color', color);
 
-    final data = await query.order('created_at', ascending: false).limit(limit);
-    return data.map((row) => Product.fromMap(row)).toList();
+      final data = await query.order('created_at', ascending: false).limit(limit);
+      return data.map((row) => Product.fromMap(row)).toList();
+    } on PostgrestException catch (e) {
+      throw NetworkException(e.message, cause: e, statusCode: 500);
+    } on SocketException catch (_) {
+      throw const NetworkException('No internet connection');
+    }
   }
 
   /// Fetch a single product by ID.
   Future<Product> fetchById(String id) async {
-    final data = await _client
-        .from('products')
-        .select()
-        .eq('id', id)
-        .single();
-    return Product.fromMap(data);
+    try {
+      final data = await _client
+          .from('products')
+          .select()
+          .eq('id', id)
+          .single();
+      return Product.fromMap(data);
+    } on PostgrestException catch (e) {
+      throw NetworkException(e.message, cause: e, statusCode: 500);
+    } on SocketException catch (_) {
+      throw const NetworkException('No internet connection');
+    }
   }
 
   /// Search products by name or brand (case-insensitive).
   Future<List<Product>> search(String query, {int limit = 20}) async {
-    final data = await _client
-        .from('products')
-        .select()
-        .or('name.ilike.%$query%,brand.ilike.%$query%')
-        .order('created_at', ascending: false)
-        .limit(limit);
+    try {
+      final data = await _client
+          .from('products')
+          .select()
+          .or('name.ilike.%$query%,brand.ilike.%$query%')
+          .order('created_at', ascending: false)
+          .limit(limit);
 
-    debugPrint('[Product] Search "$query" → ${data.length} results');
-    return data.map((row) => Product.fromMap(row)).toList();
+      debugPrint('[Product] Search "$query" → ${data.length} results');
+      return data.map((row) => Product.fromMap(row)).toList();
+    } on PostgrestException catch (e) {
+      throw NetworkException(e.message, cause: e, statusCode: 500);
+    } on SocketException catch (_) {
+      throw const NetworkException('No internet connection');
+    }
   }
 
   /// Find similar products using image embedding similarity (pgvector).
@@ -146,8 +172,14 @@ class ProductService {
     if (minPrice != null) params['filter_min_price'] = minPrice;
     if (maxPrice != null) params['filter_max_price'] = maxPrice;
 
-    final data = await _client.rpc('match_products_by_id', params: params);
-    return (data as List).map((row) => Product.fromMap(row)).toList();
+    try {
+      final data = await _client.rpc('match_products_by_id', params: params);
+      return (data as List).map((row) => Product.fromMap(row)).toList();
+    } on PostgrestException catch (e) {
+      throw NetworkException(e.message, cause: e, statusCode: 500);
+    } on SocketException catch (_) {
+      throw const NetworkException('No internet connection');
+    }
   }
 
   Future<List<Product>> _findSimilarByMetadata({
@@ -160,30 +192,36 @@ class ProductService {
     String? brandFilter,
     int limit = 20,
   }) async {
-    var query = _client
-        .from('products')
-        .select()
-        .or('category.eq.$category,color.eq.$color');
+    try {
+      var query = _client
+          .from('products')
+          .select()
+          .or('category.eq.$category,color.eq.$color');
 
-    if (minPrice != null) query = query.gte('price', minPrice);
-    if (maxPrice != null) query = query.lte('price', maxPrice);
-    if (brandFilter != null) query = query.eq('brand', brandFilter);
+      if (minPrice != null) query = query.gte('price', minPrice);
+      if (maxPrice != null) query = query.lte('price', maxPrice);
+      if (brandFilter != null) query = query.eq('brand', brandFilter);
 
-    final data = await query.limit(100);
-    var products = data.map((row) => Product.fromMap(row)).toList();
+      final data = await query.limit(100);
+      var products = data.map((row) => Product.fromMap(row)).toList();
 
-    if (excludeId != null) {
-      products = products.where((p) => p.id != excludeId).toList();
+      if (excludeId != null) {
+        products = products.where((p) => p.id != excludeId).toList();
+      }
+
+      products.sort((a, b) {
+        final sa = _metadataScore(a, category, color, style);
+        final sb = _metadataScore(b, category, color, style);
+        return sb.compareTo(sa);
+      });
+
+      debugPrint('[Product] Metadata search: ${products.length} similar to $color $category');
+      return products.take(limit).toList();
+    } on PostgrestException catch (e) {
+      throw NetworkException(e.message, cause: e, statusCode: 500);
+    } on SocketException catch (_) {
+      throw const NetworkException('No internet connection');
     }
-
-    products.sort((a, b) {
-      final sa = _metadataScore(a, category, color, style);
-      final sb = _metadataScore(b, category, color, style);
-      return sb.compareTo(sa);
-    });
-
-    debugPrint('[Product] Metadata search: ${products.length} similar to $color $category');
-    return products.take(limit).toList();
   }
 
   double _metadataScore(Product p, String category, String color, String style) {
@@ -196,16 +234,22 @@ class ProductService {
 
   /// Get distinct brand names from products table.
   Future<List<String>> fetchBrands() async {
-    final data = await _client
-        .from('products')
-        .select('brand')
-        .order('brand');
-    final brands = (data as List)
-        .map((row) => row['brand'] as String)
-        .toSet()
-        .toList();
-    brands.sort();
-    return brands;
+    try {
+      final data = await _client
+          .from('products')
+          .select('brand')
+          .order('brand');
+      final brands = (data as List)
+          .map((row) => row['brand'] as String)
+          .toSet()
+          .toList();
+      brands.sort();
+      return brands;
+    } on PostgrestException catch (e) {
+      throw NetworkException(e.message, cause: e, statusCode: 500);
+    } on SocketException catch (_) {
+      throw const NetworkException('No internet connection');
+    }
   }
 
   /// Fetch products matching a recommended clothing item (category + color).
@@ -214,25 +258,31 @@ class ProductService {
     required String color,
     int limit = 5,
   }) async {
-    // Exact match first
-    var data = await _client
-        .from('products')
-        .select()
-        .eq('category', category)
-        .eq('color', color)
-        .order('created_at', ascending: false)
-        .limit(limit);
-
-    // If too few, relax color constraint
-    if (data.length < 3) {
-      data = await _client
+    try {
+      // Exact match first
+      var data = await _client
           .from('products')
           .select()
           .eq('category', category)
+          .eq('color', color)
           .order('created_at', ascending: false)
           .limit(limit);
-    }
 
-    return data.map((row) => Product.fromMap(row)).toList();
+      // If too few, relax color constraint
+      if (data.length < 3) {
+        data = await _client
+            .from('products')
+            .select()
+            .eq('category', category)
+            .order('created_at', ascending: false)
+            .limit(limit);
+      }
+
+      return data.map((row) => Product.fromMap(row)).toList();
+    } on PostgrestException catch (e) {
+      throw NetworkException(e.message, cause: e, statusCode: 500);
+    } on SocketException catch (_) {
+      throw const NetworkException('No internet connection');
+    }
   }
 }

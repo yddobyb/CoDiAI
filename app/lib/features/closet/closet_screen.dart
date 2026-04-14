@@ -5,6 +5,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../models/clothing_item.dart';
 import '../../providers/service_providers.dart';
+import '../../widgets/cached_product_image.dart';
+import '../../widgets/skeleton_loader.dart';
 import 'closet_provider.dart';
 
 class ClosetScreen extends ConsumerStatefulWidget {
@@ -127,7 +129,17 @@ class _ClosetScreenState extends ConsumerState<ClosetScreen> {
         // Grid
         Expanded(
           child: state.isLoading
-              ? const Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
+              ? GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 0.75,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                  ),
+                  itemCount: 9,
+                  itemBuilder: (_, _) => const SkeletonClosetCard(),
+                )
               : _buildGrid(state.items),
         ),
       ],
@@ -243,13 +255,10 @@ class _ClosetItemCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (_, error, stackTrace) => Container(
-                  color: AppColors.surfaceVariant,
-                  child: const Icon(Icons.broken_image, color: AppColors.textTertiary),
-                ),
+              child: CachedProductImage(
+                imageUrl: imageUrl,
+                category: category,
+                borderRadius: 0,
               ),
             ),
             Padding(

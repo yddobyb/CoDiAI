@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/errors/app_exception.dart';
 import '../../models/product.dart';
 import '../../providers/service_providers.dart';
 
@@ -102,6 +103,9 @@ class ShopNotifier extends Notifier<ShopState> {
       }
 
       debugPrint('[Shop] Loaded ${state.products.length} products');
+    } on NetworkException catch (e) {
+      debugPrint('[Shop] Load error: $e');
+      state = state.copyWith(isLoading: false, error: e.userMessage);
     } catch (e) {
       debugPrint('[Shop] Load error: $e');
       state = state.copyWith(isLoading: false, error: 'Failed to load products');

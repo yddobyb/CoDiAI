@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_typography.dart';
 import '../models/product.dart';
+import 'cached_product_image.dart';
 
 /// Unified product grid card used in Shop and Similar Items screens.
 class ProductGridCard extends StatelessWidget {
@@ -25,23 +26,9 @@ class ProductGridCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.borderLight),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  product.imageUrl,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  errorBuilder: (_, _, _) => Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.image_outlined, size: 32, color: AppColors.textTertiary),
-                        const SizedBox(height: 4),
-                        Text(product.category, style: AppTypography.labelSmall),
-                      ],
-                    ),
-                  ),
-                ),
+              child: CachedProductImage(
+                imageUrl: product.imageUrl,
+                category: product.category,
               ),
             ),
           ),
