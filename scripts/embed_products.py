@@ -15,6 +15,8 @@ Requirements:
 """
 
 import argparse
+import hashlib
+import os
 import time
 
 import numpy as np
@@ -25,6 +27,10 @@ from io import BytesIO
 from PIL import Image
 from supabase import create_client
 from tqdm import tqdm
+
+ARITZIA_CACHE_DIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "scraper", "aritzia_cache"
+)
 
 # ── Config ──
 SUPABASE_URL = "https://REMOVED_PROJECT_ID.supabase.co"
@@ -55,7 +61,15 @@ def load_clip():
 
 
 def download_image(url: str) -> Image.Image | None:
-    """Download image from URL and return as PIL Image."""
+    """Download image from URL and return as PIL Image. Checks Aritzia local cache first."""
+    if "assets.aritzia.com" in url:
+        cache_key = hashlib.md5(url.encode()).hexdigest()[:16]
+        cache_path = os.path.join(ARITZIA_CACHE_DIR, f"{cache_key}.jpg")
+        if os.path.exists(cache_path):
+            try:
+                return Image.open(cache_path).convert("RGB")
+            except Exception:
+                pass
     try:
         resp = requests.get(url, headers=HEADERS, timeout=IMAGE_TIMEOUT)
         resp.raise_for_status()

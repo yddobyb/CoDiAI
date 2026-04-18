@@ -105,7 +105,7 @@ cd app && flutter build apk
 - **모델**: OpenAI CLIP ViT-B/32 (OpenCLIP)
 - **출력**: 512D 벡터 (L2 정규화)
 - **용도**: 유사 상품 검색 (pgvector 코사인 유사도)
-- **상품 DB**: 358개 중 356개 임베딩 생성 완료
+- **상품 DB**: 2200개 중 2185개 임베딩 생성 완료 (9개 브랜드: Aritzia 562, Oak+Fort 597, Lululemon 291, ZARA 266, Dynamite 183, Garage 133, H&M 89, UNIQLO 71, Roots 8)
 - **품질**: 카테고리 내 유사도 0.78 > 전체 평균 0.74
 - **RPC 함수**: `match_products(query_embedding, match_threshold, match_count, filter_category)`
 - **노트북**: `model/notebooks/06_image_embedding.ipynb`

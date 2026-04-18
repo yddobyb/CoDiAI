@@ -49,3 +49,13 @@ screenshot/
 
 # ===== 기타 =====
 supabase/
+
+# ===== Playwright MCP runtime =====
+.playwright-mcp/
+
+# ===== Scraper artifacts (local JSON dumps, image cache) =====
+*.json
+!app/**/*.json
+!pubspec.lock
+scripts/scraper/aritzia_cache/
+scripts/scraper/*_cache/
