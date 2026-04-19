@@ -84,7 +84,12 @@ class RecommendationNotifier extends Notifier<RecommendationState> {
       final llm = ref.read(llmServiceProvider);
       if (llm.isAvailable) {
         try {
-          await llm.generateAll(results);
+          await llm.generateAll(
+            results,
+            onUpdate: () {
+              state = state.copyWith(recommendations: List.from(results));
+            },
+          );
         } catch (e) {
           debugPrint('[Recommendation] LLM generation failed: $e');
         }

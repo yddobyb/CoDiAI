@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../providers/service_providers.dart';
+import '../../services/gemma_service.dart';
 
 enum GemmaDownloadStatus { notDownloaded, downloading, installed }
 
@@ -49,23 +51,74 @@ class GemmaState {
 
 class GemmaNotifier extends Notifier<GemmaState> {
   static const _prefKey = 'offline_ai_enabled';
+  StreamSubscription<bool>? _stateSub;
+  StreamSubscription<GemmaUnloadReason>? _unloadReasonSub;
 
   @override
   GemmaState build() {
+    _subscribeToService();
     _checkInitialState();
+    ref.onDispose(() {
+      _stateSub?.cancel();
+      _unloadReasonSub?.cancel();
+    });
     return const GemmaState();
+  }
+
+  void _subscribeToService() {
+    final gemma = ref.read(gemmaServiceProvider);
+    _stateSub = gemma.modelStateStream.listen((loaded) {
+      if (state.isModelReady != loaded) {
+        state = state.copyWith(isModelReady: loaded);
+      }
+    });
+    _unloadReasonSub = gemma.unloadReasonStream.listen((reason) {
+      if (reason == GemmaUnloadReason.memoryPressure) {
+        state = state.copyWith(
+          isModelReady: false,
+          error: 'Offline AI paused due to low memory. Tap to re-enable.',
+        );
+      }
+    });
   }
 
   Future<void> _checkInitialState() async {
     final gemma = ref.read(gemmaServiceProvider);
     final installed = await gemma.isModelInstalled();
-    if (installed) {
-      state = state.copyWith(downloadStatus: GemmaDownloadStatus.installed);
-      // Auto-load if user had it enabled
+    if (!installed) return;
+
+    final verify = await gemma.verifyInstalledModel();
+    if (verify != GemmaIntegrityResult.ok) {
+      await gemma.deleteModel();
+      state = state.copyWith(
+        downloadStatus: GemmaDownloadStatus.notDownloaded,
+        error: _integrityErrorMessage(verify),
+      );
       final prefs = await SharedPreferences.getInstance();
-      if (prefs.getBool(_prefKey) ?? false) {
-        await loadModel();
-      }
+      await prefs.setBool(_prefKey, false);
+      return;
+    }
+
+    state = state.copyWith(downloadStatus: GemmaDownloadStatus.installed);
+    // Auto-load if user had it enabled
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_prefKey) ?? false) {
+      await loadModel();
+    }
+  }
+
+  String _integrityErrorMessage(GemmaIntegrityResult result) {
+    switch (result) {
+      case GemmaIntegrityResult.missingFile:
+        return 'Model file missing. Please download again.';
+      case GemmaIntegrityResult.tooSmall:
+        return 'Download was incomplete. Please try again on Wi-Fi.';
+      case GemmaIntegrityResult.badFormat:
+        return 'Downloaded file is corrupt. Please download again.';
+      case GemmaIntegrityResult.unknown:
+        return 'Could not verify model. Please download again.';
+      case GemmaIntegrityResult.ok:
+        return '';
     }
   }
 
@@ -102,6 +155,17 @@ class GemmaNotifier extends Notifier<GemmaState> {
       await for (final progress in gemma.downloadModel()) {
         state = state.copyWith(downloadProgress: progress);
       }
+
+      final verify = await gemma.verifyInstalledModel();
+      if (verify != GemmaIntegrityResult.ok) {
+        await gemma.deleteModel();
+        state = state.copyWith(
+          downloadStatus: GemmaDownloadStatus.notDownloaded,
+          error: _integrityErrorMessage(verify),
+        );
+        return;
+      }
+
       state = state.copyWith(downloadStatus: GemmaDownloadStatus.installed);
       await loadModel();
       final prefs = await SharedPreferences.getInstance();
@@ -118,8 +182,22 @@ class GemmaNotifier extends Notifier<GemmaState> {
     final gemma = ref.read(gemmaServiceProvider);
     try {
       await gemma.loadModel();
-      state = state.copyWith(isModelReady: true);
+      state = state.copyWith(isModelReady: true, clearError: true);
     } catch (e) {
+      // A load failure may mean a corrupt or partially-downloaded file.
+      // Verify + auto-clean so the user sees a clear "re-download" path.
+      final verify = await gemma.verifyInstalledModel();
+      if (verify != GemmaIntegrityResult.ok) {
+        await gemma.deleteModel();
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool(_prefKey, false);
+        state = state.copyWith(
+          downloadStatus: GemmaDownloadStatus.notDownloaded,
+          isModelReady: false,
+          error: _integrityErrorMessage(verify),
+        );
+        return;
+      }
       state = state.copyWith(
         isModelReady: false,
         error: 'Failed to load model: $e',
