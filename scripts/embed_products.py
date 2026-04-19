@@ -33,12 +33,15 @@ ARITZIA_CACHE_DIR = os.path.join(
 )
 
 # ── Config ──
-SUPABASE_URL = "https://REMOVED_PROJECT_ID.supabase.co"
-SUPABASE_KEY = (
-    "***REMOVED_JWT_HEADER***."
-    "***REMOVED_JWT_PAYLOAD***."
-    "***REMOVED_JWT_SIG***"
-)
+# Load from environment — never hardcode keys. Set via shell:
+#   export SUPABASE_URL="https://<project>.supabase.co"
+#   export SUPABASE_KEY="<anon-or-service-role-key>"
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise RuntimeError(
+        "Missing SUPABASE_URL / SUPABASE_KEY environment variables."
+    )
 CLIP_MODEL = "ViT-B-32"
 CLIP_PRETRAINED = "openai"
 EMBEDDING_DIM = 512

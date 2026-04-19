@@ -9,8 +9,18 @@ Each brand entry defines:
 """
 
 # ── Supabase ──
-SUPABASE_URL = "https://REMOVED_PROJECT_ID.supabase.co"
-SUPABASE_KEY = "***REMOVED_SUPABASE_ANON_JWT***"
+# Load from environment — never hardcode keys. Set via shell:
+#   export SUPABASE_URL="https://<project>.supabase.co"
+#   export SUPABASE_KEY="<anon-or-service-role-key>"
+import os
+
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise RuntimeError(
+        "Missing SUPABASE_URL / SUPABASE_KEY environment variables. "
+        "Set them before running scraper scripts."
+    )
 
 # ── Rate limiting ──
 REQUEST_DELAY = 1.5  # seconds between requests
