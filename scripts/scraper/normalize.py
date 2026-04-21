@@ -65,13 +65,16 @@ def normalize_style(raw_name: str, category: str = "") -> str:
     return DEFAULT_STYLE
 
 
-def parse_price(raw_price: str) -> int | None:
-    """Extract integer CAD price from string like '$49.95' or 'CAD 120.00'."""
-    if not raw_price:
+def parse_price(raw_price) -> int | None:
+    """Extract integer CAD price from string ('$49.95'), float (49.95), or int."""
+    if raw_price is None or raw_price == "":
         return None
 
+    if isinstance(raw_price, (int, float)):
+        return round(float(raw_price))
+
     # Remove currency symbols and non-numeric chars except dots
-    cleaned = re.sub(r"[^\d.]", "", raw_price.strip())
+    cleaned = re.sub(r"[^\d.]", "", str(raw_price).strip())
     if not cleaned:
         return None
 
