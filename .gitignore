@@ -43,6 +43,7 @@ link.txt
 *.swp
 .claude/
 CLAUDE.md
+AGENTS.md
 
 # ===== 테스트 스크린샷 =====
 screenshot/
