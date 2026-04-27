@@ -9,9 +9,12 @@ enum GemmaUnloadReason { manual, memoryPressure }
 enum GemmaIntegrityResult { ok, missingFile, tooSmall, badFormat, unknown }
 
 class GemmaService with WidgetsBindingObserver {
+  // Google's official LiteRT-LM build of Gemma 4 E2B-it. Public (Apache 2.0),
+  // no auth required. .litertlm format works with flutter_gemma's MediaPipe
+  // backend on Android/iOS (.gguf would fail with "Unsupported model format").
   static const _modelUrl =
-      'https://huggingface.co/nicoboss/gemma-4-E2B-it-GGUF/resolve/main/gemma-4-E2B-it-Q4_K_M.gguf';
-  static const _modelId = 'gemma-4-E2B-it-Q4_K_M.gguf';
+      'https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/main/gemma-4-E2B-it.litertlm';
+  static const _modelId = 'gemma-4-E2B-it.litertlm';
 
   bool _isModelLoaded = false;
   InferenceModel? _model;
@@ -71,7 +74,7 @@ class GemmaService with WidgetsBindingObserver {
     final controller = StreamController<double>();
     FlutterGemma.installModel(
       modelType: ModelType.gemmaIt,
-      fileType: ModelFileType.binary,
+      fileType: ModelFileType.litertlm,
     )
         .fromNetwork(_modelUrl)
         .withProgress((progress) {
@@ -98,15 +101,14 @@ class GemmaService with WidgetsBindingObserver {
     debugPrint('[Gemma] Model loaded');
   }
 
-  /// Minimum plausible size for a usable Q4_K_M Gemma build (in bytes).
-  /// The real file is >1.5 GB — this is a floor to catch truncated / error-page responses.
+  /// Minimum plausible size for a usable Gemma 4 E2B litertlm build (in bytes).
+  /// Real file is ~2.58 GB — this is a floor to catch truncated / error-page responses.
   static const int _minModelBytes = 512 * 1024 * 1024; // 512 MB
 
-  /// GGUF magic bytes at offset 0 of a valid file.
-  static const List<int> _ggufMagic = [0x47, 0x47, 0x55, 0x46]; // "GGUF"
-
-  /// Verify the installed model is complete and in the expected format.
-  /// Called after download and at startup to catch corrupt / truncated downloads.
+  /// Verify the installed model is complete. Called after download and at
+  /// startup to catch corrupt / truncated downloads. We rely on size + load
+  /// success rather than magic-byte sniffing because .litertlm wraps a
+  /// FlatBuffer payload whose header isn't a stable single constant.
   Future<GemmaIntegrityResult> verifyInstalledModel() async {
     try {
       final dir = await getApplicationDocumentsDirectory();
@@ -116,15 +118,6 @@ class GemmaService with WidgetsBindingObserver {
       final size = await file.length();
       if (size < _minModelBytes) return GemmaIntegrityResult.tooSmall;
 
-      final raf = await file.open();
-      try {
-        final header = await raf.read(4);
-        for (var i = 0; i < 4; i++) {
-          if (header[i] != _ggufMagic[i]) return GemmaIntegrityResult.badFormat;
-        }
-      } finally {
-        await raf.close();
-      }
       return GemmaIntegrityResult.ok;
     } catch (e) {
       debugPrint('[Gemma] verifyInstalledModel error: $e');
