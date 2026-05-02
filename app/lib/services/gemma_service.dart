@@ -9,12 +9,13 @@ enum GemmaUnloadReason { manual, memoryPressure }
 enum GemmaIntegrityResult { ok, missingFile, tooSmall, badFormat, unknown }
 
 class GemmaService with WidgetsBindingObserver {
-  // Google's official LiteRT-LM build of Gemma 4 E2B-it. Public (Apache 2.0),
-  // no auth required. .litertlm format works with flutter_gemma's MediaPipe
-  // backend on Android/iOS (.gguf would fail with "Unsupported model format").
+  // MediaPipe .task format. The same repo's .litertlm variant fails on
+  // Snapdragon 888 ("TF_LITE_PREFILL_DECODE not found for backend constraints"
+  // — the file ships sections only for specific NPUs). MediaPipe .task is the
+  // documented mobile path for flutter_gemma and runs on CPU/GPU portably.
   static const _modelUrl =
-      'https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/main/gemma-4-E2B-it.litertlm';
-  static const _modelId = 'gemma-4-E2B-it.litertlm';
+      'https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/main/gemma-4-E2B-it-web.task';
+  static const _modelId = 'gemma-4-E2B-it-web.task';
 
   bool _isModelLoaded = false;
   InferenceModel? _model;
@@ -74,7 +75,7 @@ class GemmaService with WidgetsBindingObserver {
     final controller = StreamController<double>();
     FlutterGemma.installModel(
       modelType: ModelType.gemmaIt,
-      fileType: ModelFileType.litertlm,
+      fileType: ModelFileType.task,
     )
         .fromNetwork(_modelUrl)
         .withProgress((progress) {
@@ -95,6 +96,14 @@ class GemmaService with WidgetsBindingObserver {
 
   Future<void> loadModel() async {
     if (_isModelLoaded) return;
+    // flutter_gemma 0.13.x doesn't persist activeInferenceModel across app
+    // restarts — calling install() again is the supported way to re-register
+    // the spec as active. The plugin skips the download when the file is
+    // already on disk, so this is essentially free.
+    await FlutterGemma.installModel(
+      modelType: ModelType.gemmaIt,
+      fileType: ModelFileType.task,
+    ).fromNetwork(_modelUrl).install();
     _model = await FlutterGemma.getActiveModel(maxTokens: 512);
     _isModelLoaded = true;
     _stateController.add(true);
