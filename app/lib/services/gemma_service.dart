@@ -9,13 +9,16 @@ enum GemmaUnloadReason { manual, memoryPressure }
 enum GemmaIntegrityResult { ok, missingFile, tooSmall, badFormat, unknown }
 
 class GemmaService with WidgetsBindingObserver {
-  // MediaPipe .task format. The same repo's .litertlm variant fails on
-  // Snapdragon 888 ("TF_LITE_PREFILL_DECODE not found for backend constraints"
-  // — the file ships sections only for specific NPUs). MediaPipe .task is the
-  // documented mobile path for flutter_gemma and runs on CPU/GPU portably.
+  // Qwen 2.5 1.5B Instruct, MediaPipe .task format. Class/UI naming retained
+  // as "Gemma" for backward compatibility; the active model is Qwen because:
+  // 1. Gemma 4 .litertlm fails backend constraints on Snapdragon 888 (NPU-only sections)
+  // 2. Gemma 4 -web.task is web-runtime-only (MediaPipe Android can't unzip)
+  // 3. Gemma 3n .task variants are gated (need HF token)
+  // Qwen 2.5 1.5B from litert-community is public, instruct-tuned, ARM-CPU portable.
   static const _modelUrl =
-      'https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/main/gemma-4-E2B-it-web.task';
-  static const _modelId = 'gemma-4-E2B-it-web.task';
+      'https://huggingface.co/litert-community/Qwen2.5-1.5B-Instruct/resolve/main/Qwen2.5-1.5B-Instruct_multi-prefill-seq_q8_ekv1280.task';
+  static const _modelId =
+      'Qwen2.5-1.5B-Instruct_multi-prefill-seq_q8_ekv1280.task';
 
   bool _isModelLoaded = false;
   InferenceModel? _model;
@@ -74,7 +77,7 @@ class GemmaService with WidgetsBindingObserver {
   Stream<double> downloadModel() {
     final controller = StreamController<double>();
     FlutterGemma.installModel(
-      modelType: ModelType.gemmaIt,
+      modelType: ModelType.qwen,
       fileType: ModelFileType.task,
     )
         .fromNetwork(_modelUrl)
@@ -101,10 +104,13 @@ class GemmaService with WidgetsBindingObserver {
     // the spec as active. The plugin skips the download when the file is
     // already on disk, so this is essentially free.
     await FlutterGemma.installModel(
-      modelType: ModelType.gemmaIt,
+      modelType: ModelType.qwen,
       fileType: ModelFileType.task,
     ).fromNetwork(_modelUrl).install();
-    _model = await FlutterGemma.getActiveModel(maxTokens: 512);
+    _model = await FlutterGemma.getActiveModel(
+      maxTokens: 512,
+      preferredBackend: PreferredBackend.cpu,
+    );
     _isModelLoaded = true;
     _stateController.add(true);
     debugPrint('[Gemma] Model loaded');
