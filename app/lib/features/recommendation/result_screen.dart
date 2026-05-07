@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../models/clothing_item.dart';
 import '../../providers/premium_provider.dart';
+import '../../widgets/external_search_chips.dart';
 import '../../widgets/outfit_card.dart';
 import '../../widgets/product_suggestion_row.dart';
 import 'recommendation_provider.dart';
@@ -50,7 +51,11 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
               children: [
                 // ── Your Item Summary ──
                 _buildUserItemCard(),
-                const SizedBox(height: 28),
+                const SizedBox(height: 16),
+
+                // ── External Shopping Search ──
+                ExternalSearchChips(item: widget.clothingItem),
+                const SizedBox(height: 24),
 
                 // ── Section Header ──
                 Row(

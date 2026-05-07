@@ -12,6 +12,7 @@ import '../services/personalization_service.dart';
 import '../services/product_service.dart';
 import '../services/click_tracking_service.dart';
 import '../services/daily_outfit_service.dart';
+import '../services/search_query_service.dart';
 import '../services/usage_service.dart';
 
 final mlServiceProvider = Provider<MlService>((ref) => MlService());
@@ -30,6 +31,7 @@ final productServiceProvider = Provider<ProductService>((ref) => ProductService(
 final clickTrackingServiceProvider = Provider<ClickTrackingService>((ref) => ClickTrackingService());
 final usageServiceProvider = Provider<UsageService>((ref) => UsageService());
 final dailyOutfitServiceProvider = Provider<DailyOutfitService>((ref) => DailyOutfitService());
+final searchQueryServiceProvider = Provider<SearchQueryService>((ref) => SearchQueryService());
 
 final authStateProvider = StreamProvider<AuthState>((ref) {
   return Supabase.instance.client.auth.onAuthStateChange;
