@@ -25,7 +25,7 @@ jobs:
       - name: Create config files
         run: |
           mkdir -p lib/core/config
-          echo "const geminiApiKey = '';" > lib/core/config/api_keys.dart
+          echo "const geminiApiKey = ''; const huggingFaceToken = '';" > lib/core/config/api_keys.dart
           echo "const supabaseUrl = ''; const supabaseAnonKey = '';" > lib/core/config/supabase_config.dart
           echo "const googleWebClientId = ''; const googleIosClientId = '';" > lib/core/config/oauth_config.dart
 
