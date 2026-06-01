@@ -16,6 +16,10 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>fashion_codi</string>
+	<key>NSCameraUsageDescription</key>
+	<string>CoDi uses the camera so you can take a photo of a clothing item to analyze and get outfit recommendations.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>CoDi accesses your photo library so you can choose a clothing photo to analyze and get outfit recommendations.</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
