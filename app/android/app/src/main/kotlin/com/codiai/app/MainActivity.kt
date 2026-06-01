@@ -1,4 +1,4 @@
-package com.example.fashion_codi
+package com.codiai.app
 
 import io.flutter.embedding.android.FlutterActivity
 
