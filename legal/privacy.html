@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — CoDi</title>
+<style>
+  :root { --ink:#1a1a1a; --beige:#c9a87c; --muted:#6b6b6b; --line:#eceae6; --bg:#faf9f7; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  .wrap { max-width:760px; margin:0 auto; padding:48px 24px 80px; }
+  header { border-bottom:1px solid var(--line); padding-bottom:24px; margin-bottom:32px; }
+  .logo { display:inline-block; background:var(--ink); color:var(--beige);
+    font-weight:700; font-size:20px; padding:6px 14px; border-radius:10px; letter-spacing:.5px; }
+  h1 { font-size:30px; margin:24px 0 6px; letter-spacing:-.5px; }
+  .sub { color:var(--muted); font-size:14px; }
+  h2 { font-size:20px; margin:38px 0 10px; }
+  h3 { font-size:16px; margin:22px 0 6px; }
+  p, li { color:#2c2c2c; }
+  a { color:#9a7b48; }
+  ul { padding-left:20px; }
+  .pill { display:inline-block; background:#f0ece4; color:#7a6b50; font-size:12px;
+    padding:2px 9px; border-radius:20px; margin-right:6px; }
+  .note { background:#fff; border:1px solid var(--line); border-radius:12px;
+    padding:16px 18px; margin:18px 0; }
+  .good { border-left:3px solid var(--beige); }
+  table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+  th, td { text-align:left; padding:10px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:600; }
+  footer { margin-top:48px; padding-top:24px; border-top:1px solid var(--line);
+    color:var(--muted); font-size:13px; }
+  code { background:#f0ece4; padding:1px 6px; border-radius:5px; font-size:14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="logo">Co</span>
+    <h1>Privacy Policy</h1>
+    <p class="sub">CoDi — Fashion AI &nbsp;·&nbsp; Last updated: June 1, 2026 &nbsp;·&nbsp; Effective: June 1, 2026</p>
+  </header>
+
+  <p>CoDi ("the app", "we", "us") is a fashion styling app. You upload a photo of a clothing
+  item, an on-device AI model analyzes it, and the app suggests outfit combinations and similar
+  products to shop. This policy explains what we collect, how we use it, and the choices you have.
+  It is written in plain language and is meant to be honest about how the app actually works.</p>
+
+  <div class="note good">
+    <strong>Privacy-first by design.</strong> The AI that analyzes your clothing photo runs
+    <strong>on your device</strong> — your photo is not sent to a server to be classified. Cloud AI
+    (for written style tips) receives only short text tags such as "beige hoodie, casual", never your
+    photo. An optional fully-offline AI mode keeps style tips on your device as well.
+  </div>
+
+  <h2>1. Information we collect</h2>
+
+  <h3>Information you provide</h3>
+  <table>
+    <tr><th>Data</th><th>When &amp; why</th></tr>
+    <tr><td>Email address</td><td>When you create an account or sign in with Google or Apple. Used to authenticate you and recover your account.</td></tr>
+    <tr><td>Nickname</td><td>Optional display name you choose for your profile.</td></tr>
+    <tr><td>Style preference</td><td>Optional, to personalize outfit recommendations.</td></tr>
+    <tr><td>Clothing photos</td><td>Taken with your camera or chosen from your gallery. Used to analyze the item. A photo is stored only if you choose to save the item to your closet.</td></tr>
+  </table>
+
+  <h3>Information created as you use the app</h3>
+  <table>
+    <tr><th>Data</th><th>Purpose</th></tr>
+    <tr><td>Closet items (category, color, style, image)</td><td>Your saved wardrobe, used to build outfit recommendations.</td></tr>
+    <tr><td>Outfit history &amp; likes/dislikes</td><td>To remember past recommendations and improve future suggestions.</td></tr>
+    <tr><td>Product taps (click events)</td><td>To measure which suggested products are useful and for affiliate attribution.</td></tr>
+    <tr><td>Daily usage count</td><td>To enforce free-tier limits and premium status.</td></tr>
+  </table>
+
+  <p>We do <strong>not</strong> collect your contacts, precise location, browsing history outside the app,
+  or device advertising identifiers.</p>
+
+  <h2>2. How your photos are handled</h2>
+  <ul>
+    <li><span class="pill">On-device</span> Clothing classification (category, color, season) runs locally on your phone using an embedded model. The image is processed on the device.</li>
+    <li><span class="pill">Stored only if saved</span> A photo is uploaded to our storage <em>only</em> when you explicitly add the item to your closet. It is stored in a per-user folder so the app can show your wardrobe across sessions.</li>
+    <li><span class="pill">Not used to train models</span> We do not use your photos to train AI models.</li>
+    <li><span class="pill">Deletable</span> Deleting a closet item removes its photo from storage.</li>
+  </ul>
+
+  <h2>3. AI features &amp; what leaves your device</h2>
+  <ul>
+    <li><strong>On-device analysis:</strong> clothing recognition — stays on device.</li>
+    <li><strong>Cloud style tips (Google Gemini API):</strong> when generating a written style tip, the app sends only <em>text attributes</em> of the outfit (e.g. colors, categories, styles) — never your photo or personal identity.</li>
+    <li><strong>Optional Offline AI:</strong> if you enable it, style tips are generated entirely on your device and nothing is sent to any server.</li>
+  </ul>
+
+  <h2>4. Third-party services</h2>
+  <p>We rely on a small number of service providers to run the app:</p>
+  <table>
+    <tr><th>Provider</th><th>Role</th><th>What they receive</th></tr>
+    <tr><td>Supabase</td><td>Backend (authentication, database, photo storage). Hosted in the United States.</td><td>Account info, closet data, saved photos.</td></tr>
+    <tr><td>Google (Gemini API)</td><td>Cloud AI for written style tips.</td><td>Text outfit attributes only.</td></tr>
+    <tr><td>Google / Apple Sign-In</td><td>Optional social login.</td><td>Authentication tokens, email.</td></tr>
+    <tr><td>Retailers &amp; search engines</td><td>"Buy Now" and shopping-search links open external sites (e.g. Aritzia, Amazon, Google Shopping).</td><td>Your search query / the product you tapped. Governed by their own privacy policies.</td></tr>
+  </table>
+  <p>Some shopping links are affiliate links. If you buy through them, we may earn a commission at no
+  extra cost to you. This does not change the price you pay.</p>
+
+  <h2>5. How we use your information</h2>
+  <ul>
+    <li>To analyze clothing and generate outfit recommendations.</li>
+    <li>To personalize suggestions based on your closet, feedback, and preferences.</li>
+    <li>To maintain your account and sync your data across sessions.</li>
+    <li>To operate free and premium tiers.</li>
+    <li>To understand which features and products are useful (aggregate, in-app analytics).</li>
+  </ul>
+  <p>We do <strong>not</strong> sell your personal information.</p>
+
+  <h2>6. Data retention</h2>
+  <p>We keep your account and closet data until you delete the item or your account. Deleting a closet
+  item removes its photo. Deleting your account removes your profile and associated data from our
+  active database.</p>
+
+  <h2>7. Your rights &amp; choices</h2>
+  <ul>
+    <li><strong>Access &amp; correction:</strong> view and edit your profile and closet in the app.</li>
+    <li><strong>Deletion:</strong> delete individual closet items, or request full account deletion (see contact below).</li>
+    <li><strong>Offline mode:</strong> enable on-device AI to avoid sending any outfit data to the cloud.</li>
+    <li><strong>Permissions:</strong> camera and photo access are requested only when you upload an item, and can be revoked anytime in your device settings.</li>
+  </ul>
+  <p>If you are in Canada, you have rights under the Personal Information Protection and Electronic
+  Documents Act (PIPEDA). Depending on where you live, you may have additional rights to access,
+  correct, or delete your data.</p>
+
+  <h2>8. Children</h2>
+  <p>CoDi is not directed at children under 13, and we do not knowingly collect their personal
+  information.</p>
+
+  <h2>9. Changes to this policy</h2>
+  <p>We may update this policy as the app evolves. We will revise the "Last updated" date above and,
+  for material changes, provide notice in the app.</p>
+
+  <h2>10. Contact</h2>
+  <p>Questions or data requests:
+  <a href="mailto:support@codiai.app">support@codiai.app</a></p>
+
+  <footer>
+    © 2026 CoDi. This document describes the CoDi mobile app's data practices and does not constitute
+    legal advice.
+  </footer>
+</div>
+</body>
+</html>
