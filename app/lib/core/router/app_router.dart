@@ -12,15 +12,42 @@ import '../../features/profile/premium_screen.dart';
 import '../../features/shop/shop_screen.dart';
 import '../../features/shop/product_detail_screen.dart';
 import '../../features/shop/product_list_screen.dart';
+import '../../features/onboarding/onboarding_screen.dart';
 import '../../models/product.dart';
 import '../../widgets/app_shell.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
+/// SharedPreferences key for the first-run onboarding flag.
+const onboardingSeenKey = 'onboarding_seen';
+
+/// Whether the user has completed onboarding. Set synchronously in `main()`
+/// before `runApp` so the router redirect can read it without async work.
+/// Defaults to `true` so a missed initialization never traps users out of the app.
+bool onboardingSeen = true;
+
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/',
+  redirect: (context, state) {
+    final atOnboarding = state.matchedLocation == '/onboarding';
+    if (!onboardingSeen && !atOnboarding) return '/onboarding';
+    if (onboardingSeen && atOnboarding) return '/';
+    return null;
+  },
   routes: [
+    // ── First-run onboarding (full screen, no bottom nav) ──
+    GoRoute(
+      path: '/onboarding',
+      name: 'onboarding',
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (context, state) => CustomTransitionPage(
+        key: state.pageKey,
+        child: const OnboardingScreen(),
+        transitionsBuilder: (_, animation, secondaryAnimation, child) =>
+            FadeTransition(opacity: animation, child: child),
+      ),
+    ),
     // ── Bottom Navigation Shell ──
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {

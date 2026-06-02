@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/config/api_keys.dart';
 import 'core/config/supabase_config.dart';
@@ -13,6 +14,9 @@ void main() async {
   await FlutterGemma.initialize(
     huggingFaceToken: huggingFaceToken.isNotEmpty ? huggingFaceToken : null,
   );
+  // Decide whether to show first-run onboarding before the router builds.
+  final prefs = await SharedPreferences.getInstance();
+  onboardingSeen = prefs.getBool(onboardingSeenKey) ?? false;
   runApp(const ProviderScope(child: CoDiApp()));
 }
 
