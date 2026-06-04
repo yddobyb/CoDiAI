@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import '../core/config/api_keys.dart' as config;
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../core/config/supabase_config.dart';
 import '../models/outfit_recommendation.dart';
 import 'gemma_service.dart';
 
@@ -10,9 +11,12 @@ class LlmService {
 
   LlmService({GemmaService? gemmaService}) : _gemma = gemmaService;
 
-  static const _baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
+  // Cloud style tips go through the `gemini-proxy` Edge Function so the Gemini
+  // API key stays server-side (never shipped in the app binary).
+  static final _proxyUrl = '$supabaseUrl/functions/v1/gemini-proxy';
 
-  bool get isAvailable => config.geminiApiKey.isNotEmpty || (_gemma?.isModelLoaded ?? false);
+  bool get _cloudAvailable => supabaseUrl.isNotEmpty;
+  bool get isAvailable => _cloudAvailable || (_gemma?.isModelLoaded ?? false);
   bool get isGemmaReady => _gemma?.isModelLoaded ?? false;
 
   /// Build the style tip prompt from a recommendation.
@@ -52,9 +56,9 @@ Write a 2-3 sentence styling tip. Include when/where to wear this outfit, one sp
       }
     }
 
-    // Fallback to Gemini API
-    if (config.geminiApiKey.isNotEmpty) {
-      return _callGeminiWithFallback(prompt);
+    // Fallback to cloud (Gemini via Edge Function proxy)
+    if (_cloudAvailable) {
+      return _callCloud(prompt);
     }
 
     return null;
@@ -86,72 +90,46 @@ Write a 2-3 sentence styling tip. Include when/where to wear this outfit, one sp
       }
     }
 
-    if (config.geminiApiKey.isNotEmpty) {
-      final text = await _callGeminiWithFallback(prompt);
+    if (_cloudAvailable) {
+      final text = await _callCloud(prompt);
       if (text != null && text.isNotEmpty) yield text;
     }
   }
 
-  Future<String?> _callGeminiWithFallback(String prompt) async {
+  /// Calls the `gemini-proxy` Edge Function, which holds the Gemini key
+  /// server-side and tries the model fallback chain. Sends the project's
+  /// publishable key (and the user's access token when signed in) so the
+  /// function's apikey gate passes for both anonymous and logged-in users.
+  Future<String?> _callCloud(String prompt) async {
     final stopwatch = Stopwatch()..start();
-    for (final model in ['gemini-2.5-flash', 'gemini-2.0-flash-lite', 'gemini-flash-latest']) {
-      try {
-        debugPrint('[LLM] Trying $model...');
-        final result = await _callGemini(prompt, model);
-        if (result != null && result.isNotEmpty) {
-          stopwatch.stop();
-          debugPrint('[LLM] Success with $model in ${stopwatch.elapsedMilliseconds}ms');
-          return result;
-        }
-      } catch (e) {
-        debugPrint('[LLM] $model error: $e');
-      }
-    }
-    return null;
-  }
+    final token =
+        Supabase.instance.client.auth.currentSession?.accessToken ?? supabaseAnonKey;
+    try {
+      debugPrint('[LLM] Calling cloud style-tip proxy...');
+      final response = await http.post(
+        Uri.parse(_proxyUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supabaseAnonKey,
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({'prompt': prompt}),
+      );
 
-  Future<String?> _callGemini(String prompt, String model) async {
-    final url = Uri.parse('$_baseUrl/$model:generateContent?key=${config.geminiApiKey}');
-
-    final body = jsonEncode({
-      'contents': [
-        {
-          'parts': [
-            {'text': prompt}
-          ]
-        }
-      ],
-      'generationConfig': {
-        'temperature': 0.7,
-        'maxOutputTokens': 1024,
-      },
-    });
-
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: body,
-    );
-
-    if (response.statusCode == 200) {
-      try {
+      if (response.statusCode == 200) {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
-        final candidates = json['candidates'] as List?;
-        if (candidates == null || candidates.isEmpty) return null;
-        final content = (candidates[0] as Map?)?['content'] as Map?;
-        final parts = content?['parts'] as List?;
-        if (parts == null || parts.isEmpty) return null;
-        final text = (parts[0] as Map?)?['text'] as String?;
-        return text?.trim();
-      } catch (e) {
-        debugPrint('[LLM] $model JSON parse error: $e');
-        return null;
+        final text = (json['text'] as String?)?.trim();
+        stopwatch.stop();
+        debugPrint('[LLM] Cloud proxy success in ${stopwatch.elapsedMilliseconds}ms');
+        return (text != null && text.isNotEmpty) ? text : null;
       }
-    } else {
       final preview = response.body.length > 200
           ? response.body.substring(0, 200)
           : response.body;
-      debugPrint('[LLM] $model failed (${response.statusCode}): $preview');
+      debugPrint('[LLM] Cloud proxy failed (${response.statusCode}): $preview');
+      return null;
+    } catch (e) {
+      debugPrint('[LLM] Cloud proxy error: $e');
       return null;
     }
   }
