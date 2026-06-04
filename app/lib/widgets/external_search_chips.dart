@@ -26,9 +26,13 @@ class ExternalSearchChips extends ConsumerWidget {
           children: [
             const Icon(Icons.search, size: 14, color: AppColors.textTertiary),
             const SizedBox(width: 6),
-            Text(
-              'Search "$query" on',
-              style: AppTypography.labelMedium.copyWith(color: AppColors.textTertiary),
+            Expanded(
+              child: Text(
+                'Search "$query" on',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.labelMedium.copyWith(color: AppColors.textTertiary),
+              ),
             ),
           ],
         ),
