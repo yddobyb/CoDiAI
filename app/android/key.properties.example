@@ -1,0 +1,20 @@
+# Android release signing — template.
+#
+# Copy this file to `android/key.properties` (which is gitignored) and fill in
+# your own values after generating an upload keystore. NEVER commit the real
+# key.properties or the .jks/.keystore file — losing or leaking them means you
+# can no longer update the published app.
+#
+# 1. Generate an upload keystore (run from the repo root, keep the .jks safe):
+#      keytool -genkey -v -keystore ~/codi-upload-keystore.jks \
+#        -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+#
+# 2. Copy this file:  cp android/key.properties.example android/key.properties
+# 3. Fill in the values below.
+# 4. Build a signed release:  flutter build appbundle   (or apk)
+
+storePassword=YOUR_KEYSTORE_PASSWORD
+keyPassword=YOUR_KEY_PASSWORD
+keyAlias=upload
+# Absolute path to the .jks, or relative to the android/app directory.
+storeFile=/absolute/path/to/codi-upload-keystore.jks
