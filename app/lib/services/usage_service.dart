@@ -23,14 +23,40 @@ class UsageService {
 
   /// Increment analysis count. Returns true if allowed, false if limit reached.
   Future<bool> recordAnalysis({required bool isPremium}) async {
+    // Logged-in users are gated server-side: the `record_analysis` RPC checks
+    // premium status + the daily free limit atomically and increments the
+    // counter. The client can no longer write daily_usage directly, so the
+    // limit can't be bypassed by tampering with the count or skipping the
+    // local check. `isPremium` here is only a UI hint; the server decides.
+    if (_isLoggedIn) return _recordRemote();
+
+    // Anonymous users have no server identity; the local counter is a soft
+    // limit (resettable by reinstall — unavoidable without an account).
     if (isPremium) return true;
-
-    final used = await _getTodayCount();
+    final used = await _getLocalCount();
     if (used >= freeAnalysisLimit) return false;
-
-    await _incrementCount();
-    debugPrint('[Usage] Analysis ${used + 1}/$freeAnalysisLimit today');
+    await _incrementLocal();
+    debugPrint('[Usage] Analysis ${used + 1}/$freeAnalysisLimit today (local)');
     return true;
+  }
+
+  /// Calls the server-side gate. Returns true if the analysis was allowed.
+  /// Fails open on transient/network errors so a flaky connection doesn't block
+  /// a legitimate user — the server stays authoritative whenever reachable.
+  Future<bool> _recordRemote() async {
+    try {
+      final result = await _client.rpc('record_analysis');
+      final remaining = (result as int?) ?? -1;
+      if (remaining < 0) {
+        debugPrint('[Usage] Daily free limit reached');
+        return false;
+      }
+      debugPrint('[Usage] Analysis recorded, $remaining remaining today');
+      return true;
+    } catch (e) {
+      debugPrint('[Usage] Remote record failed (fail-open): $e');
+      return true;
+    }
   }
 
   Future<int> _getTodayCount() async {
@@ -38,14 +64,6 @@ class UsageService {
       return _getRemoteCount();
     }
     return _getLocalCount();
-  }
-
-  Future<void> _incrementCount() async {
-    if (_isLoggedIn) {
-      await _incrementRemote();
-    } else {
-      await _incrementLocal();
-    }
   }
 
   // ── Remote (Supabase) for logged-in users ──
@@ -63,22 +81,6 @@ class UsageService {
     } catch (e) {
       debugPrint('[Usage] Remote fetch failed: $e');
       return 0;
-    }
-  }
-
-  Future<void> _incrementRemote() async {
-    try {
-      final today = DateTime.now().toIso8601String().substring(0, 10);
-      await _client.from('daily_usage').upsert(
-        {
-          'user_id': _userId!,
-          'usage_date': today,
-          'analysis_count': (await _getRemoteCount()) + 1,
-        },
-        onConflict: 'user_id,usage_date',
-      );
-    } catch (e) {
-      debugPrint('[Usage] Remote increment failed: $e');
     }
   }
 

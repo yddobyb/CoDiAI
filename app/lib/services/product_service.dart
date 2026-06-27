@@ -8,6 +8,18 @@ import '../models/product.dart';
 class ProductService {
   final SupabaseClient _client = Supabase.instance.client;
 
+  /// Removes characters that are structurally significant in PostgREST's
+  /// `.or()` filter grammar — the condition separator `,` and grouping `()`
+  /// (plus quotes/backslash) — so an interpolated search term or attribute
+  /// can't inject extra filter conditions. Internal whitespace is collapsed;
+  /// the term still matches via ilike. The `products` catalog is public-read,
+  /// so impact is low, but this keeps user input from altering query shape.
+  @visibleForTesting
+  static String sanitizeOrFilterValue(String value) => value
+      .replaceAll(RegExp(r'[,()"\\]'), ' ')
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .trim();
+
   /// Fetch products with optional filters, sorting, and pagination.
   Future<List<Product>> fetchProducts({
     String? category,
@@ -96,10 +108,11 @@ class ProductService {
   /// Search products by name or brand (case-insensitive).
   Future<List<Product>> search(String query, {int limit = 20}) async {
     try {
+      final q = sanitizeOrFilterValue(query);
       final data = await _client
           .from('products')
           .select()
-          .or('name.ilike.%$query%,brand.ilike.%$query%')
+          .or('name.ilike.%$q%,brand.ilike.%$q%')
           .order('created_at', ascending: false)
           .limit(limit);
 
@@ -193,10 +206,12 @@ class ProductService {
     int limit = 20,
   }) async {
     try {
+      final safeCat = sanitizeOrFilterValue(category);
+      final safeColor = sanitizeOrFilterValue(color);
       var query = _client
           .from('products')
           .select()
-          .or('category.eq.$category,color.eq.$color');
+          .or('category.eq.$safeCat,color.eq.$safeColor');
 
       if (minPrice != null) query = query.gte('price', minPrice);
       if (maxPrice != null) query = query.lte('price', maxPrice);

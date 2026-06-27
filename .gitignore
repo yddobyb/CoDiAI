@@ -58,5 +58,6 @@ supabase/
 *.json
 !app/**/*.json
 !pubspec.lock
-scripts/scraper/aritzia_cache/
-scripts/scraper/*_cache/
+
+# ===== Scripts (local dev tooling: scrapers + embedding, service-role usage) =====
+scripts/
